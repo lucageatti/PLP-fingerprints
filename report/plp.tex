@@ -1,0 +1,97 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{pythonhighlight}
+\usepackage[all]{foreign}
+\usepackage{cleveref}
+\usepackage{fmtcount}
+\usepackage{verbatim}
+\usepackage{multicol}
+\usepackage{xparse}
+
+\NewDocumentCommand\weight{}{\textsf{weight}\xspace}
+
+\title{Probabilistic Logic Programming Exam}
+\author{
+        Francesco Fabiano, Luca Geatti\\
+        \footnotesize Department of Mathematics, Computer Science and Physics \\
+        \footnotesize University of Udine\\
+        \footnotesize via delle Scienze, 206, 33100 Udine, \underline{Italy}
+}
+\date{\footnotesize\today}
+
+
+\begin{document}
+\maketitle
+%\begin{abstract*}
+$\dots$
+%\end{abstract*}
+
+\section{Encoding}
+\label{sec:encoding}
+
+\subsection{Structure constraints}
+\paragraph{Constraint 1}:
+
+\paragraph{Constraint 2}:
+
+
+\section{Probability constraints}
+\subsection{Tented Archs}
+\paragraph{Contraint TA1}:
+Given two E-minutiae belonging to a tented arch fingerprint, we note that 
+the probability of existence of an edge between these two minutiae 
+is higher if they have different directions w.r.t. when they have 
+the same direction.
+
+Let $M_1=(X_1,Y_1,D_1,e)$ and $M_2=(X_2,Y_2,D_2,e)$ be two E-minutiae.
+Let 
+  \begin{align*}
+    \weight_d(M_1,M_2) \coloneqq 
+    \frac{
+      \left( \pi - \Big\lvert \lvert D_1-D_2 \rvert - 
+      \pi \rvert\Big\rvert \right)}{\pi}
+  \end{align*} 
+We give the value $weight_d(M_1,M_2)$ to the probability of existence of
+an edge between $M_1$ and $M_2$.
+
+
+
+\paragraph{Contraint TA2}:
+Given two B-minutiae belonging to a tented arch fingerprint, the more
+these two minutiae are distant (either in the x-axis or in the y-axis)
+the less an edge between them is likely to exists.
+
+Let $M_1=(X_1,Y_1,D_1,b)$ and $M_2=(X_2,Y_2,D_2,b)$ be two B-minutiae.
+Let $max_x$ and $max_y$ be the maximum value for the x-coordinate and
+y-coordinate, respectively. We define:
+  \begin{align*}
+    \weight_x(M_1,M_2) \coloneqq
+    \frac{\lvert X_1 - X_2 \rvert}{max_x}
+  \end{align*}
+  \begin{align*}
+    \weight_y(M_1,M_2) \coloneqq
+    \frac{\lvert Y_1 - Y_2 \rvert}{max_y}
+  \end{align*}
+We give the value $\weight_x$ and $\weight_y$ to the probability 
+of existence of an edge between $M_1$ and $M_2$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
