@@ -81,10 +81,30 @@ of existence of an edge between $M_1$ and $M_2$.
 
 
 
+\subsection{Plain Archs}
+Tutti i vincoli uguali a Tented Archs, piu TA5 con ended e tranne "uno meno".
 
 
+\subsection{Left/Right Loop}
+Non dividiamo in 4 quadranti, ma piuttosto diamo un peso a tutte le
+regole, cioè sia a quelle standard dei plain archs (due quadranti superiori)
+sia a quelle specifiche per i left/right loops (due quadranti inferiori).
 
-
+I pesi per le probabilità sono opposti per i due tipi di regole, a seconda
+che si avvicinino o meno alla parte bassa o alta dell'immagine. L'idea è
+questa:
+  \begin{itemize}
+    \item
+      piu mi avvicino alla parte bassa dell'immagine e piu do peso alle
+      regole per i left/right loops. Faccio questo \emph{moltiplicando}
+      la probabilita dell'arco per il valore:
+        \begin{align*}
+          1 - Y_1 \cdot Y_2
+        \end{align*}
+    \item
+      similmente, piu mi avvicino alla parte alta dell'immagine e piu 
+      do peso alle regole per i plain archs.
+  \end{itemize}
 
 
 
