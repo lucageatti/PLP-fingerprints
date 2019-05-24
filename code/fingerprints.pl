@@ -1,4 +1,4 @@
-/*
+/**
  * Fingerprint recognition encoding in LPAD.
  * 
  * Francesco Fabiano (University of Udine),
@@ -56,6 +56,8 @@
 %%% PROBABILITY RULES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%DIRECTION%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Constraint TA1:
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,e),
                				 minutia(X2,Y2,D2,e),
@@ -65,21 +67,52 @@ edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,e),
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,b),
                				 minutia(X2,Y2,D2,b),
     						 Weight is float(rdiv((pi - (abs(abs(D1-D2) - pi))),pi)).
-edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,b),
-               				 minutia(X2,Y2,_,b),
-        					 max_X(MX),
-    						 Weight is float(rdiv(abs(X1-X2),MX)).
-edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,b),
-               				 minutia(X2,Y2,_,b),
-    						 max_Y(MY),
-    						 Weight is float(rdiv(abs(Y1-Y2),MY)).
 
+
+%%Calculate the line angle and then make D1,D2 realtive to it
 % Constraint TA3:
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,T1),
                				 minutia(X2,Y2,D2,T2),
     						 T1 \== T2,
     						 Half_pi is rdiv(pi,2),
     						 Weight is float(1-rdiv((Half_pi - abs((abs(abs(abs(D1-D2) - Half_pi)-Half_pi)-Half_pi))),Half_pi)).
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%DISTANCE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Constraint TA4:
+edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,_),
+               				 minutia(X2,Y2,_,_),
+    						 max_Y(MY),
+    						 Weight is float(1 - rdiv(abs(Y1-Y2),MY)).
+
+%Constraint TA5:
+edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,b),
+               				 minutia(X2,Y2,_,b),
+        					 max_X(MX),
+    						 Weight is float(1 - rdiv(abs(X1-X2),MX)).
+
+%Constraint TA6:
+edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
+               				 minutia(X2,Y2,_,e),
+        					 max_X(MX),
+    						 Weight is float(1 - rdiv(abs(rdiv(abs(X1-X2),2) - rdiv(MX,2)), MX)).
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%LEFT LOOP%%%%%%%%%%%%%%%%%%%%%%%%%%
+edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
+               				 minutia(X2,Y2,_,e),
+        				     max_Y(MY),
+        					 Weight_rule is float(1-(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY))),
+    						 Weight is float(Weight_rule*(1 - rdiv(rdiv(abs(Y1-Y2),2) - rdiv(MY,4), MY)))
+    
+edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
+               				 minutia(X2,Y2,_,e),
+        				     max_Y(MY),
+        					 Weight_rule is float(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY)),
+    						 Weight is float(Weight_rule*(1- rdiv(abs(Y1-Y2),MY)))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% KNOWLEDGE BASE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
