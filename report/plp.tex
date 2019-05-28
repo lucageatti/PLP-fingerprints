@@ -1,4 +1,5 @@
-\documentclass[12pt]{article}
+\documentclass[8pt]{article}
+\usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage{graphicx}
@@ -25,17 +26,81 @@
 
 \begin{document}
 \maketitle
-%\begin{abstract*}
-$\dots$
-%\end{abstract*}
+\paragraph{Abstract}
+This is a report for the exam of the PhD course on Probabilistic Logic
+Programming, held at University of Udine in academic year 2018-2019.
 
+
+
+\section{Introduction}
+\begin{enumerate}
+  \item
+    Spiegare il problema del fingerprint recognition.
+  \item
+    Fare un' introduzione su PLP.
+  \item
+    Spiegare a grandi linee come vogliamo applicare PLP a 
+    fingerprint recognition.
+\end{enumerate}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Encoding
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Encoding}
 \label{sec:encoding}
+We start by describing the basic predicates we introduced to model
+the problem. In order to model a minutia, we introduced the predicate
+  \begin{center}
+    \textsf{minutia(X,Y,D,T)}
+  \end{center}
+where $\textsf{X},\textsf{Y} \in \mathbb{N}$ are the coordinates of the minutiae 
+inside the image along the X-axis and Y-axis, respectively;
+$\textsf{D} \in [0,2\pi]$ is the direction, expressed in radians; 
+and $T \in \{e,b\}$ is the type of the fingerprint ($e$ stands for
+\emph{ending}, $b$ for \emph{bifurcation}).
+The second predicate is
+  \begin{center}
+    \textsf{type\_fingerprint(T)}
+  \end{center}
+where $\textsf{T}\in\{
+  \textsf{tented\_archs},
+  \textsf{plain\_archs},
+  \textsf{left\_loop},
+  \textsf{right\_loop},
+  \textsf{whorl}
+\}$; 
+basically, it express which type the overall fingerprint belongs to.
+Finally, \textsf{max\_X(N)} and \textsf{max\_Y(N)} express the number
+of pixels of the image along the X-axis and the Y-axis, respectively.
+The \emph{knowledge base} of our program will be the set of all the 
+\textsf{minutia/4} predicates corresponding to the input file,
+the \textsf{type\_fingerprint/1} predicate and the \textsf{max\_X/1}
+and \textsf{max\_Y/1} predicates.
+
+Since what we want to entail are the edges between the minutiae along
+with their probability of existence, we introduced the predicate
+  \begin{center}
+    \textsf{edge($X_1,Y_1,X_2,Y_2$)}
+  \end{center}
+where $(X_1,Y_1)$ are the coordinates of one end and $(X_2,Y_2)$
+the coordinate of the other end.
+Since in our setting we want undirected edges (their direction doesn't
+matter), some simmmetry breaking constraints can be added to the 
+encoding, aiming at removing specular but equivalent solutions; in
+particular, we constrained that there must exists only left-to-right
+edges.
 
 \subsection{Structure constraints}
+We introduce two structure constraints to forbid certain edges
+in the final solution.
 \paragraph{Constraint 1}:
-
+each B-minutia has exactly $3$ incident edges. This has been achieved
+using the \texttt{aggregate\_all} predicate.
 \paragraph{Constraint 2}:
+similarly, each E-minutia has exactly $2$ incident edges.
 
 
 \section{Probability constraints}
