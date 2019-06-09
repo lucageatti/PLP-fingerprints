@@ -33,15 +33,59 @@ Programming, held at University of Udine in the academic year 2018-2019.
 
 
 \section{Introduction}
-\begin{enumerate}
-  \item
-    Spiegare il problema del fingerprint recognition.
-  \item
-    Fare un' introduzione su PLP.
-  \item
-    Spiegare a grandi linee come vogliamo applicare PLP a 
-    fingerprint recognition.
-\end{enumerate}
+
+  \paragraph{The problem}
+    Modern \textit{biometrics}-based tool exploit the fact that these biometric characteristics, used for the verification of an individual’s identity, are unique from person to person.
+    That is way the majority of the studies in this filed aim to generate biometric tools that are able to distinguish even twins.
+    
+    The purpose of these researches is to identify the uniqueness of each \textit{fingerprint}, facial feature or others characteristics of a person.
+    For all these reasons, to the best of our knowledge, no study exists that tries to exploit heredity in such features.
+    \textit{Heredity} may be defined as the transmission of characteristics from the parents to the offspring.
+    Such traits as body size, hair color, skin color, eye color, etc. are known to be inherited.
+    The cell is the unit of structures and the unit of heredity.
+    Chromosomes in all of the body cells of a single individual are alike.
+    Thus, the individual functions as a single unit—alike in every cell yet different from all other people.
+    
+    In this study we try to extrapolate from a fingerprint, the most used biometric characteristics, a data structure informative enough to be used for heredity-finding purposes.
+    This newly created data structure will be defined starting from the fingerprint \textit{minutiae}, informative points of the fingerprint itself often used for the \textquoteleft classical' biometrics-based recognition (The circles in Figure~\ref{fig:ske_min}).
+%\paragraph{Fare un' introduzione su PLP.}
+  \paragraph{Exploiting P.L.P.}
+    The main idea of the study, as said before, is to capture a new fingerprint description starting from the widely used minutiae.
+    This new structure can be pictured as a directed \textit{graph} with some constrains on the edges: each node can have at most one \textit{incoming edge} and at most two \textit{outgoing}.
+    The main idea behind this graph (shown in Figure~\ref{fig:ske_min_graph}) is that it should \textquoteleft emulate' the \textit{skeleton} (the black lines of Figure~\ref{fig:ske_min}) of the fingerprint.
+    As reconstructing this graph could be somewhat trivial when in posses of the fingerprint's original image, it is not when the only available information are the fingerprint's minutiae.
+    Unfortunately this is the case in most of the official databases where, due to space optimization, the fingerprints are only stored as a set of minutiae along with few other information.
+    
+   	\begin{figure}
+    	\centering
+    	\includegraphics[width=0.35\linewidth]{img/ske_min}
+    	\caption{The skeleton and the minutiae of a fingerprint.}
+    	\label{fig:ske_min}
+    \end{figure}
+    
+    \begin{figure}
+    	\centering
+    	\includegraphics[width=0.35\linewidth]{img/ske_min_graph}
+    	\caption{The ideal graph of the fingerprint in Figure~\ref{fig:ske_min}.}
+    	\label{fig:ske_min_graph}
+    \end{figure}%
+    
+    This is way we decided to exploit \textit{Probabilistic Logic Programming}.
+   	In fact, having the fingerprints regular patterns (Figure~\ref{fig:patterns}), we could exploit this information to reconstruct the graph using probability.
+   	In particular our aim is to associate each edge with a percentage of existence based on various factors such as: length, angle, position, crossing with other edges, incoming and outgoing nodes.
+   	Once that all the edges have been labeled the result will be a probabilistic graph that could be used as base for heredity-base recognition.
+   	Through the use of P.L.P. it has been possible to characterize probabilistic constraints that allowed the graph reconstruction.
+   	As further step we though to exploit the \textquoteleft learning' capabilities of this paradigm allowing the program to infer the best weight for each constraints relative to each pattern.
+
+    \begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{img/patterns}
+		\caption{Fingerprint patterns as they appear at a coarse level: a) \textit{left loop}, b) \textit{right loop}, c)
+			\textit{whorl}, d) \textit{\textit{arch}}, and e) tented arch; squares denote loop-type singular points, and triangles
+			delta-type singular points..}
+		\label{fig:patterns}
+	\end{figure}%
+
 
 
 
