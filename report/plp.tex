@@ -153,7 +153,6 @@ Given two E-minutiae belonging to a tented arch fingerprint, we note that
 the probability of existence of an edge between these two minutiae 
 is high if they have opposite directions and low if the have 
 the same direction.
-
 Let $M_1=(X_1,Y_1,D_1,e)$ and $M_2=(X_2,Y_2,D_2,e)$ be two E-minutiae.
 Let 
   \begin{align*}
@@ -162,8 +161,10 @@ Let
       \left( \pi - \Big\lvert \lvert D_1-D_2 \rvert - 
       \pi \rvert\Big\rvert \right)}{\pi}
   \end{align*} 
-We give the value $weight_d(M_1,M_2)$ to the probability of existence of
-an edge between $M_1$ and $M_2$.
+The more $\lvert D_1-D_2 \rvert$ is close to $\pi$ (resp. $0$), the more 
+$weight_d(M_1,M_2)$ is close to $1$ (resp. $0$).
+With Constraint TA1, we give the value $weight_d(M_1,M_2)$ to the probability 
+of existence of an edge between $M_1$ and $M_2$.
 
 
 
