@@ -1,0 +1,234 @@
+{
+  "width": 504,
+  "height": 480,
+  "minutiae": [
+    {
+      "x": 178, 
+      "y": 333, 
+      "direction": 1.71969, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 220, 
+      "y": 180, 
+      "direction": 0.0499584, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 175, 
+      "y": 444, 
+      "direction": 2.07364, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 182, 
+      "y": 412, 
+      "direction": 1.62075, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 220, 
+      "y": 262, 
+      "direction": 0.463648, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 230, 
+      "y": 248, 
+      "direction": 0.463648, 
+      "type": "ending"
+    },
+    {
+      "x": 318, 
+      "y": 130, 
+      "direction": 3.38657, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 164, 
+      "y": 367, 
+      "direction": 1.81577, 
+      "type": "ending"
+    },
+    {
+      "x": 223, 
+      "y": 289, 
+      "direction": 0.726642, 
+      "type": "ending"
+    },
+    {
+      "x": 160, 
+      "y": 306, 
+      "direction": 2.03444, 
+      "type": "ending"
+    },
+    {
+      "x": 187, 
+      "y": 241, 
+      "direction": 2.67795, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 182, 
+      "y": 278, 
+      "direction": 2.07364, 
+      "type": "ending"
+    },
+    {
+      "x": 194, 
+      "y": 398, 
+      "direction": 1.42191, 
+      "type": "ending"
+    },
+    {
+      "x": 228, 
+      "y": 327, 
+      "direction": 1.52084, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 230, 
+      "y": 358, 
+      "direction": 1.32582, 
+      "type": "ending"
+    },
+    {
+      "x": 258, 
+      "y": 270, 
+      "direction": 3.66639, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 264, 
+      "y": 322, 
+      "direction": 4.06889, 
+      "type": "ending"
+    },
+    {
+      "x": 155, 
+      "y": 143, 
+      "direction": 2.85014, 
+      "type": "ending"
+    },
+    {
+      "x": 183, 
+      "y": 455, 
+      "direction": 1.14794, 
+      "type": "ending"
+    },
+    {
+      "x": 188, 
+      "y": 224, 
+      "direction": 6.07569, 
+      "type": "ending"
+    },
+    {
+      "x": 215, 
+      "y": 169, 
+      "direction": 2.89661, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 207, 
+      "y": 305, 
+      "direction": 1.86225, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 240, 
+      "y": 286, 
+      "direction": 0.866302, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 284, 
+      "y": 336, 
+      "direction": 1.03038, 
+      "type": "ending"
+    },
+    {
+      "x": 296, 
+      "y": 344, 
+      "direction": 4.17197, 
+      "type": "ending"
+    },
+    {
+      "x": 168, 
+      "y": 259, 
+      "direction": 2.35619, 
+      "type": "ending"
+    },
+    {
+      "x": 201, 
+      "y": 257, 
+      "direction": 1.5708, 
+      "type": "ending"
+    },
+    {
+      "x": 269, 
+      "y": 113, 
+      "direction": 0.244979, 
+      "type": "ending"
+    },
+    {
+      "x": 277, 
+      "y": 408, 
+      "direction": 0.785398, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 113, 
+      "y": 244, 
+      "direction": 2.53087, 
+      "type": "ending"
+    },
+    {
+      "x": 112, 
+      "y": 269, 
+      "direction": 1.98321, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 188, 
+      "y": 255, 
+      "direction": 2.25311, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 207, 
+      "y": 240, 
+      "direction": 1.3734, 
+      "type": "ending"
+    },
+    {
+      "x": 258, 
+      "y": 82, 
+      "direction": 3.39892, 
+      "type": "ending"
+    },
+    {
+      "x": 229, 
+      "y": 236, 
+      "direction": 0.291457, 
+      "type": "ending"
+    },
+    {
+      "x": 290, 
+      "y": 162, 
+      "direction": 0.463648, 
+      "type": "ending"
+    },
+    {
+      "x": 224, 
+      "y": 305, 
+      "direction": 1.76819, 
+      "type": "ending"
+    },
+    {
+      "x": 235, 
+      "y": 323, 
+      "direction": 1.19029, 
+      "type": "ending"
+    },
+  ]
+}

@@ -1,4 +1,4 @@
-/**
+/*
  * Fingerprint recognition encoding in LPAD.
  * 
  * Francesco Fabiano (University of Udine),
@@ -9,7 +9,6 @@
 :- pita.
 
 :- begin_lpad.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% AUX PREDICATES
@@ -27,7 +26,13 @@
    minutia(X2,Y2,_,_),
    X1=X2, Y1>=Y2.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% STRUCTURE PREDICATES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+archs:- type_fingerprint(tented_archs).
+archs:- type_fingerprint(plain_archs).
+loops:- type_fingerprint(left_loop).
+loops:- type_fingerprint(right_loop).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% STRUCTURE CONSTRAINTS
@@ -50,90 +55,84 @@
    minutia(X,Y,_,e),
    minutia(X1,Y1,_,_).
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PROBABILITY RULES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%DIRECTION%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%DIRECTION
 
-% Constraint TA1:
+%%%Weights
+weight_rule(W,_,_) :- archs,
+    				  W is 1.
+weight_rule(W,Y1,Y2) :- loops,
+    			  		minutia(_,Y1,_,_),
+    			  		minutia(_,Y2,_,_),
+    			  		W is float(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY)).
+
+%Constraint POS_1:
 %edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,T),
-%               				 minutia(X2,Y2,D2,T),
-%    						 Weight is float(rdiv((pi - (abs(abs(D1-D2) - pi))),pi)).
+%    						 minutia(X2,Y2,D2,T),
+% 							%Alpha1 is float(atan2(abs(Y1-Y2),abs(X1-X2))),
+%            			     Alpha1 is float(atan2(Y1-Y2,X1-X2)),
+%        					 Alpha2 is float(atan2(Y2-Y1,X2-X1)),
+%    						 %Diff1 is float(abs(D1-Alpha1)),
+%    						 %Diff2 is float(abs(D2-Alpha1)),
+%    						 Diff1 is float(pi - (abs(abs(D1-Alpha1) - pi))),
+%        					 Diff2 is float(pi - (abs(abs(D2-Alpha2) - pi))),
+%    						 weight_rule(W,Y1,Y2),
+%    						 Weight is float(W*(1 -rdiv((Diff1+Diff2),(2*pi)))).
+%OLD
+%edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,T),
+%               			  minutia(X2,Y2,D2,T),
+%    						  Weight is float(rdiv((pi - (abs(abs(D1-D2) - pi))),pi)).
 
-archs :- type_fingerprint(tented_archs).
-archs :- type_fingerprint(plain_archs).
-weight_rule(1) :- archs.
-weight_rule(W,Y1,Y2) :- type_fingerprint(left_loop),
-    			  		minutia(_,Y1,_,_),
-    			  		minutia(_,Y2,_,_),
-    			  		W is float(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY)).
-weight_rule(W,Y1,Y2) :- type_fingerprint(right_loop),
-    			  		minutia(_,Y1,_,_),
-    			  		minutia(_,Y2,_,_),
-    			  		W is float(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY)).
-
-%Constraint TA1-MOD:
-edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,T),
-    						 minutia(X2,Y2,D2,T),
-    						 Alpha is float(atan2(abs(X1-X2),abs(Y1-Y2))),
-    						 Diff1 is float(abs(D1-Alpha)),
-    						 Diff2 is float(abs(D2-Alpha)),
+% Constraint POS_2:
+edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,_),
+    						 minutia(X2,Y2,D2,_),
+    						 %Alpha1 is float(atan2(abs(Y1-Y2),abs(X1-X2))),
+            			     Alpha1 is float(atan2(Y1-Y2,X1-X2)),
+        					 Alpha2 is float(atan2(Y2-Y1,X2-X1)),
+    						 %Diff1 is float(abs(D1-Alpha1)),
+    						 %Diff2 is float(abs(D2-Alpha1)),
+    						 Diff1 is float(abs(D1-Alpha1)),
+        					 Diff2 is float(abs(D2-Alpha2)),
     						 weight_rule(W,Y1,Y2),
-    						 Weight is float(W*(1 - rdiv((Diff1+Diff2),(2*pi)))).
-
-%%Calculate the line angle and then make D1,D2 relative to it
-% Constraint TA2:
+    						 Weight is float(W*(1 -rdiv((Diff1+Diff2),(2*pi)))).
+%OLD
 %edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,T1),
-%               				 minutia(X2,Y2,D2,T2),
-%    						 T1 \== T2,
-%    						 Half_pi is rdiv(pi,2),
-%    						 Weight is float(1-rdiv((Half_pi - abs((abs(abs(abs(D1-D2) - Half_pi)-Half_pi)-Half_pi))),Half_pi)).
+%               			  minutia(X2,Y2,D2,T2),
+%    						  T1 \== T2,
+%    						  Half_pi is rdiv(pi,2),
+%    						  Weight is float(1-rdiv((Half_pi - abs((abs(abs(abs(D1-D2) - Half_pi)-Half_pi)-Half_pi))),Half_pi)).
 
 
-%Constraint TA2-MOD:
-edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,T1),
-    						 minutia(X2,Y2,D2,T2),
-    						 T1 \== T2,
-    						 Alpha is float(atan2(abs(X1-X2),abs(Y1-Y2))),
-    						 Diff1 is float(abs(D1-Alpha)),
-    						 Diff2 is float(abs(D2-Alpha)),
-    						 weight_rule(W,Y1,Y2),
-    						 Weight is float(W*(1 - rdiv((Diff1+Diff2),(2*pi)))).
+%%%%DISTANCE
 
-
-%%%%%%%%%%%%%%%%%%%%%%DISTANCE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Constraint TA4:
+%%%ARCHS
+%Constraint DIST_ARCH_1:
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,_),
                				 minutia(X2,Y2,_,_),
     						 max_Y(MY),
     						 archs,
     						 Weight is float(1 - rdiv(abs(Y1-Y2),MY)).
 
-%Constraint TA5:
+%Constraint DIST_ARCH_2:
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,b),
                				 minutia(X2,Y2,_,b),
         					 max_X(MX),
                              archs,
     						 Weight is float(1 - rdiv(abs(X1-X2),MX)).
 
-%Constraint TA6:
+%Constraint DIST_ARCH_3:
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
                				 minutia(X2,Y2,_,e),
         					 max_X(MX),
     						 archs,
     						 Weight is float(1 - rdiv(abs(rdiv(abs(X1-X2),2) - rdiv(MX,2)), MX)).
 
+%%%LOOPS
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%LEFT LOOP%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% TODO:
-%  1. right loop
-%  2. contraint on X for loops
-%  3. TA2 correct angle
-%%%
+%%%Left loop
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
                				 minutia(X2,Y2,_,e),
     						 type_fingerprint(left_loop),
@@ -143,12 +142,41 @@ edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
                              Weight_rule is float(Weight_ruleY*(((1 - rdiv(X1,MX)))*abs(1 - rdiv(X2,MX)))),
     						 Weight is float(Weight_rule*(1 - rdiv(rdiv(abs(Y1-Y2),2) - rdiv(MY,4), MY))).
     
+%%Right loop
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
                				 minutia(X2,Y2,_,e),
-    						 type_fingerprint(left_loop),
+    						 type_fingerprint(right_loop),
+        				     max_Y(MY),
+          				     max_X(MX),
+        					 Weight_ruleY is float(1-(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY))),
+                             Weight_rule is float(Weight_ruleY*((rdiv(X1,MX))*abs(rdiv(X2,MX)))),
+    						 Weight is float(Weight_rule*(1 - rdiv(rdiv(abs(Y1-Y2),2) - rdiv(MY,4), MY))).
+
+%loops
+edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
+               				 minutia(X2,Y2,_,e),
+    						 loops,
         				     max_Y(MY),
         					 Weight_rule is float(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY)),
     						 Weight is float(Weight_rule*(1- rdiv(abs(Y1-Y2),MY))).
+
+mostProb(edge(_,_,_,_)).
+
+:- mostProb(edge(X1,X2,Y1,Y2)),
+   prob(edge(X1,X2,Y1,Y2),P1),
+   prob(edge(_,_,_,_),P2),
+   P2 < P1.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% QUERY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Prob edges
+%prob(edge(X1,Y1,X2,Y2),P).
+
+:- end_lpad.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% KNOWLEDGE BASE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%

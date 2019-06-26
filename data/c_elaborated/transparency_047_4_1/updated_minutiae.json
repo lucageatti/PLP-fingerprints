@@ -1,0 +1,342 @@
+{
+  "width": 504,
+  "height": 480,
+  "minutiae": [
+    {
+      "x": 76, 
+      "y": 344, 
+      "direction": 0.0499584, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 139, 
+      "y": 123, 
+      "direction": 5.35589, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 103, 
+      "y": 389, 
+      "direction": 0.442374, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 129, 
+      "y": 260, 
+      "direction": 5.17604, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 176, 
+      "y": 85, 
+      "direction": 5.69518, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 146, 
+      "y": 256, 
+      "direction": 5.81954, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 142, 
+      "y": 374, 
+      "direction": 0.551655, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 183, 
+      "y": 181, 
+      "direction": 2.18152, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 147, 
+      "y": 374, 
+      "direction": 3.24126, 
+      "type": "ending"
+    },
+    {
+      "x": 205, 
+      "y": 182, 
+      "direction": 1.44644, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 221, 
+      "y": 130, 
+      "direction": 2.9927, 
+      "type": "ending"
+    },
+    {
+      "x": 206, 
+      "y": 288, 
+      "direction": 3.24126, 
+      "type": "ending"
+    },
+    {
+      "x": 201, 
+      "y": 435, 
+      "direction": 3.43305, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 219, 
+      "y": 358, 
+      "direction": 3.44747, 
+      "type": "ending"
+    },
+    {
+      "x": 222, 
+      "y": 377, 
+      "direction": 0.14889, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 93, 
+      "y": 319, 
+      "direction": 0, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 142, 
+      "y": 440, 
+      "direction": 0.197396, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 104, 
+      "y": 280, 
+      "direction": 6.03821, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 156, 
+      "y": 207, 
+      "direction": 5.32311, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 126, 
+      "y": 382, 
+      "direction": 3.74388, 
+      "type": "ending"
+    },
+    {
+      "x": 186, 
+      "y": 105, 
+      "direction": 2.27529, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 152, 
+      "y": 462, 
+      "direction": 3.43305, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 181, 
+      "y": 409, 
+      "direction": 0.244979, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 172, 
+      "y": 464, 
+      "direction": 0.422854, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 207, 
+      "y": 316, 
+      "direction": 3.29048, 
+      "type": "ending"
+    },
+    {
+      "x": 237, 
+      "y": 265, 
+      "direction": 3.68201, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 248, 
+      "y": 223, 
+      "direction": 4.0441, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 220, 
+      "y": 370, 
+      "direction": 0.197396, 
+      "type": "ending"
+    },
+    {
+      "x": 297, 
+      "y": 150, 
+      "direction": 4.37571, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 287, 
+      "y": 267, 
+      "direction": 3.90136, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 169, 
+      "y": 363, 
+      "direction": 2.98499, 
+      "type": "ending"
+    },
+    {
+      "x": 284, 
+      "y": 159, 
+      "direction": 1.14794, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 128, 
+      "y": 335, 
+      "direction": 0.197396, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 180, 
+      "y": 152, 
+      "direction": 5.55329, 
+      "type": "ending"
+    },
+    {
+      "x": 171, 
+      "y": 206, 
+      "direction": 5.34742, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 179, 
+      "y": 289, 
+      "direction": 0.0996687, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 172, 
+      "y": 368, 
+      "direction": 0.14889, 
+      "type": "ending"
+    },
+    {
+      "x": 285, 
+      "y": 85, 
+      "direction": 0.994421, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 237, 
+      "y": 390, 
+      "direction": 3.14159, 
+      "type": "ending"
+    },
+    {
+      "x": 244, 
+      "y": 376, 
+      "direction": 3.33899, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 244, 
+      "y": 405, 
+      "direction": 3.09163, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 252, 
+      "y": 392, 
+      "direction": 5.40713, 
+      "type": "ending"
+    },
+    {
+      "x": 103, 
+      "y": 389, 
+      "direction": 0.0996687, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 144, 
+      "y": 235, 
+      "direction": 5.57869, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 177, 
+      "y": 122, 
+      "direction": 5.55654, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 150, 
+      "y": 370, 
+      "direction": 0.14889, 
+      "type": "ending"
+    },
+    {
+      "x": 168, 
+      "y": 263, 
+      "direction": 6.18352, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 226, 
+      "y": 25, 
+      "direction": 2.9927, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 247, 
+      "y": 249, 
+      "direction": 3.92699, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 276, 
+      "y": 102, 
+      "direction": 4.17197, 
+      "type": "ending"
+    },
+    {
+      "x": 295, 
+      "y": 127, 
+      "direction": 1.19029, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 297, 
+      "y": 216, 
+      "direction": 4.10166, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 286, 
+      "y": 306, 
+      "direction": 3.71797, 
+      "type": "ending"
+    },
+    {
+      "x": 96, 
+      "y": 344, 
+      "direction": 0.0996687, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 120, 
+      "y": 401, 
+      "direction": 0.628796, 
+      "type": "ending"
+    },
+    {
+      "x": 135, 
+      "y": 310, 
+      "direction": 0.0996687, 
+      "type": "bifurcation"
+    },
+  ]
+}

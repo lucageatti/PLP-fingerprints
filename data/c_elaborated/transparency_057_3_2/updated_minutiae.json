@@ -1,0 +1,228 @@
+{
+  "width": 504,
+  "height": 480,
+  "minutiae": [
+    {
+      "x": 128, 
+      "y": 360, 
+      "direction": 5.21523, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 154, 
+      "y": 360, 
+      "direction": 2.07364, 
+      "type": "ending"
+    },
+    {
+      "x": 187, 
+      "y": 409, 
+      "direction": 1.87668, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 240, 
+      "y": 388, 
+      "direction": 4.11234, 
+      "type": "ending"
+    },
+    {
+      "x": 302, 
+      "y": 160, 
+      "direction": 0.812419, 
+      "type": "ending"
+    },
+    {
+      "x": 316, 
+      "y": 188, 
+      "direction": 4.03765, 
+      "type": "ending"
+    },
+    {
+      "x": 282, 
+      "y": 448, 
+      "direction": 3.98249, 
+      "type": "ending"
+    },
+    {
+      "x": 209, 
+      "y": 317, 
+      "direction": 2.89661, 
+      "type": "ending"
+    },
+    {
+      "x": 222, 
+      "y": 371, 
+      "direction": 0.96007, 
+      "type": "ending"
+    },
+    {
+      "x": 118, 
+      "y": 246, 
+      "direction": 5.55329, 
+      "type": "ending"
+    },
+    {
+      "x": 128, 
+      "y": 402, 
+      "direction": 5.27571, 
+      "type": "ending"
+    },
+    {
+      "x": 213, 
+      "y": 234, 
+      "direction": 0.197396, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 193, 
+      "y": 447, 
+      "direction": 0.610726, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 217, 
+      "y": 344, 
+      "direction": 2.6168, 
+      "type": "ending"
+    },
+    {
+      "x": 217, 
+      "y": 376, 
+      "direction": 1.47113, 
+      "type": "ending"
+    },
+    {
+      "x": 228, 
+      "y": 338, 
+      "direction": 3.29048, 
+      "type": "ending"
+    },
+    {
+      "x": 296, 
+      "y": 140, 
+      "direction": 3.81633, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 243, 
+      "y": 468, 
+      "direction": 2.76109, 
+      "type": "ending"
+    },
+    {
+      "x": 285, 
+      "y": 264, 
+      "direction": 4.00789, 
+      "type": "ending"
+    },
+    {
+      "x": 262, 
+      "y": 398, 
+      "direction": 4.20955, 
+      "type": "ending"
+    },
+    {
+      "x": 348, 
+      "y": 346, 
+      "direction": 4.13601, 
+      "type": "ending"
+    },
+    {
+      "x": 213, 
+      "y": 177, 
+      "direction": 2.9442, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 170, 
+      "y": 412, 
+      "direction": 5.0929, 
+      "type": "ending"
+    },
+    {
+      "x": 176, 
+      "y": 416, 
+      "direction": 2.27069, 
+      "type": "ending"
+    },
+    {
+      "x": 200, 
+      "y": 344, 
+      "direction": 6.03821, 
+      "type": "ending"
+    },
+    {
+      "x": 205, 
+      "y": 383, 
+      "direction": 1.71969, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 210, 
+      "y": 380, 
+      "direction": 1.47113, 
+      "type": "ending"
+    },
+    {
+      "x": 248, 
+      "y": 432, 
+      "direction": 3.87149, 
+      "type": "ending"
+    },
+    {
+      "x": 170, 
+      "y": 351, 
+      "direction": 2.07789, 
+      "type": "ending"
+    },
+    {
+      "x": 128, 
+      "y": 246, 
+      "direction": 2.53087, 
+      "type": "ending"
+    },
+    {
+      "x": 180, 
+      "y": 181, 
+      "direction": 6.03821, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 156, 
+      "y": 372, 
+      "direction": 5.21523, 
+      "type": "bifurcation"
+    },
+    {
+      "x": 172, 
+      "y": 374, 
+      "direction": 1.99365, 
+      "type": "ending"
+    },
+    {
+      "x": 206, 
+      "y": 426, 
+      "direction": 4.33188, 
+      "type": "ending"
+    },
+    {
+      "x": 286, 
+      "y": 402, 
+      "direction": 0.866302, 
+      "type": "ending"
+    },
+    {
+      "x": 349, 
+      "y": 316, 
+      "direction": 0.896055, 
+      "type": "ending"
+    },
+    {
+      "x": 178, 
+      "y": 389, 
+      "direction": 1.9513, 
+      "type": "ending"
+    },
+  ]
+}
