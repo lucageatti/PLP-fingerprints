@@ -11,8 +11,10 @@
 \usepackage{verbatim}
 \usepackage{multicol}
 \usepackage{xparse}
+\usepackage{listings}
 
 \NewDocumentCommand\weight{}{\textsf{weight}\xspace}
+\DeclareMathOperator{\arctantwo}{arctan2}
 
 \title{Probabilistic Logic Programming Exam}
 \author{
@@ -99,8 +101,9 @@ the problem. In order to model a minutia, we introduced the predicate
   \begin{center}
     \textsf{minutia(X,Y,D,T)}
   \end{center}
-where $\textsf{X},\textsf{Y} \in \mathbb{N}$ are the coordinates of the minutiae 
-inside the image along the X-axis and Y-axis, respectively;
+where $\textsf{X},\textsf{Y} \in \mathbb{N}$ are the coordinates\footnote{Note 
+that the pixel with coordinates $(0,0)$ is the top left one.}
+of the minutiae inside the image along the X-axis and Y-axis, respectively;
 $\textsf{D} \in [0,2\pi]$ is the direction, expressed in radians; 
 and $T \in \{e,b\}$ is the type of the fingerprint ($e$ stands for
 \emph{ending}, $b$ for \emph{bifurcation}).
@@ -116,13 +119,27 @@ where $\textsf{T}\in\{
   \textsf{whorl}
 \}$; 
 basically, it express which type the overall fingerprint belongs to.
+(see \cref{fig:patterns})
 Finally, \textsf{max\_X(N)} and \textsf{max\_Y(N)} express the number
 of pixels of the image along the X-axis and the Y-axis, respectively.
 The \emph{knowledge base} of our program will be the set of all the 
 \textsf{minutia/4} predicates corresponding to the input file,
 the \textsf{type\_fingerprint/1} predicate and the \textsf{max\_X/1}
-and \textsf{max\_Y/1} predicates.
-
+and \textsf{max\_Y/1} predicates. For example:
+  \begin{center}
+  \begin{lstlisting}[language=Prolog,frame = single]
+max_Y(450).
+max_X(338).
+type_fingerprint(tented_archs).
+minutia(338,84,3.14888994760949725,e).
+minutia(47,450,0.1334635904729058,e).
+minutia(39,302,0.8478169733934057,e).
+...
+minutia(58,256,5.31793364398966,b).
+minutia(94,104,0.09966865249116204,b).
+minutia(62,272,5.135242906517631,b).
+  \end{lstlisting}
+  \end{center}
 Since what we want to entail are the edges between the minutiae along
 with their probability of existence, we introduced the predicate
   \begin{center}
@@ -139,83 +156,221 @@ edges.
 \subsection{Structure constraints}
 We introduce two structure constraints to forbid wrong edges
 in the final solution.
-\paragraph{Constraint 1}:
-each B-minutia has exactly $3$ incident edges. This has been achieved
-using the \texttt{aggregate\_all} predicate.
-\paragraph{Constraint 2}:
-similarly, each E-minutia has exactly $2$ incident edges.
-
+\begin{itemize}
+  \item
+    each B-minutia has exactly $3$ incident edges. This has been achieved
+    using the \texttt{aggregate\_all} predicate, as follows:
+      \begin{lstlisting}[language=Prolog,frame = single]
+:- aggregate_all(count, edge(X,Y,X1,Y1), Count_1),
+   aggregate_all(count, edge(X2,Y2,X,Y), Count_2),
+   Sum is Count_1+Count_2, Sum =\= 3,
+   minutia(X,Y,_,b),
+   minutia(X1,Y1,_,_),
+   minutia(X2,Y2,_,_).
+      \end{lstlisting}
+  \item
+    similarly, each E-minutia has exactly $2$ incident edges.
+\end{itemize}
 
 \section{Probability constraints}
-\subsection{Tented Archs}
-\paragraph{Contraint TA1}:
-Given two E-minutiae belonging to a tented arch fingerprint, we note that 
-the probability of existence of an edge between these two minutiae 
-is high if they have opposite directions and low if the have 
-the same direction.
-Let $M_1=(X_1,Y_1,D_1,e)$ and $M_2=(X_2,Y_2,D_2,e)$ be two E-minutiae.
-Let 
+\subsection{Tented and Plain Archs}
+%\paragraph{Contraint POS1}:
+%Given two E-minutiae belonging to a tented arch fingerprint, we note that 
+%the probability of existence of an edge between these two minutiae 
+%is high if they have opposite directions and low if the have 
+%the same direction.
+%Let $M_1=(X_1,Y_1,D_1,e)$ and $M_2=(X_2,Y_2,D_2,e)$ be two E-minutiae.
+%Let 
+%  \begin{align*}
+%    \weight_d(M_1,M_2) \coloneqq 
+%    \frac{
+%      \left( \pi - \Big\lvert \lvert D_1-D_2 \rvert - 
+%      \pi \rvert\Big\rvert \right)}{\pi}
+%  \end{align*} 
+%The more $\lvert D_1-D_2 \rvert$ is close to $\pi$ (resp. $0$), the more 
+%$weight_d(M_1,M_2)$ is close to $1$ (resp. $0$).
+%With Constraint TA1, we give the value $weight_d(M_1,M_2)$ to the probability 
+%of existence of an edge between $M_1$ and $M_2$.
+%
+%\paragraph{Contraint POS2}:
+%Given two B-minutiae belonging to a tented arch fingerprint, the more
+%these two minutiae are distant (either in the x-axis or in the y-axis)
+%the less an edge between them is likely to exists.
+%
+%Let $M_1=(X_1,Y_1,D_1,b)$ and $M_2=(X_2,Y_2,D_2,b)$ be two B-minutiae.
+%Let $max_x$ and $max_y$ be the maximum value for the x-coordinate and
+%y-coordinate, respectively. We define:
+%  \begin{align*}
+%    \weight_x(M_1,M_2) \coloneqq
+%    \frac{\lvert X_1 - X_2 \rvert}{max_x}
+%  \end{align*}
+%  \begin{align*}
+%    \weight_y(M_1,M_2) \coloneqq
+%    \frac{\lvert Y_1 - Y_2 \rvert}{max_y}
+%  \end{align*}
+%We give the value $\weight_x$ and $\weight_y$ to the probability 
+%of existence of an edge between $M_1$ and $M_2$.
+In this part, we describe probability rules for the tented and plain archs
+fingerprints: refer to (c) and (d) of \cref{fig:patterns} for an example.
+
+\paragraph{Constraint POS}
+In this paragraph, we give a constraint for the edges inside a tented
+or plaing arch fingerprint that link the \emph{direction} of the two
+minutiae with the probability of existence of an edge between them.
+Given two minutiae $M_1$ and $M_2$ (of any kind) beloning to a tented 
+or plain arch fingerprint,
+we note that the probability of existence of an edge between these two
+respects this rule: the more the directions of both the minutiae
+is close to the straight line connecting $M_1$ and $M_2$ the more the
+probability is high.
+Let $M_1=(X_1,Y_1,D_1,_)$ and $M_2=(X_2,Y_2,D_2,_)$ be two minutiae.
+Let $\alpha_1=\arctantwo(Y1-Y2,X1-X2)$ and $\alpha_2=\arctantwo(Y2-Y1,X2-X1)$:
+$\alpha_1$ (resp. $\alpha_2$) measures the value of the angle (in randians) between 
+the direction of $M_1$ (resp. $M_2$) and the straight line between $M_1$ and
+$M_2$.
+We define:
   \begin{align*}
-    \weight_d(M_1,M_2) \coloneqq 
-    \frac{
-      \left( \pi - \Big\lvert \lvert D_1-D_2 \rvert - 
-      \pi \rvert\Big\rvert \right)}{\pi}
-  \end{align*} 
-The more $\lvert D_1-D_2 \rvert$ is close to $\pi$ (resp. $0$), the more 
-$weight_d(M_1,M_2)$ is close to $1$ (resp. $0$).
-With Constraint TA1, we give the value $weight_d(M_1,M_2)$ to the probability 
+    \weight_{POS} \coloneqq
+    W \cdot (1-\frac{\lvert D1-\alpha_1\rvert+\lvert D2-\alpha_2\rvert}{2\pi})
+  \end{align*}
+where in the case of tented archs $W=1$: in the following we will explain the
+meaning of variable $W$.
+With Constraint POS, we give the value $weight_{POS}(M_1,M_2)$ to the probability 
 of existence of an edge between $M_1$ and $M_2$.
 
-
-
-\paragraph{Contraint TA2}:
-Given two B-minutiae belonging to a tented arch fingerprint, the more
-these two minutiae are distant (either in the x-axis or in the y-axis)
-the less an edge between them is likely to exists.
-
-Let $M_1=(X_1,Y_1,D_1,b)$ and $M_2=(X_2,Y_2,D_2,b)$ be two B-minutiae.
-Let $max_x$ and $max_y$ be the maximum value for the x-coordinate and
-y-coordinate, respectively. We define:
-  \begin{align*}
-    \weight_x(M_1,M_2) \coloneqq
-    \frac{\lvert X_1 - X_2 \rvert}{max_x}
-  \end{align*}
-  \begin{align*}
-    \weight_y(M_1,M_2) \coloneqq
-    \frac{\lvert Y_1 - Y_2 \rvert}{max_y}
-  \end{align*}
-We give the value $\weight_x$ and $\weight_y$ to the probability 
-of existence of an edge between $M_1$ and $M_2$.
-
-
-
-
-\subsection{Plain Archs}
-Tutti i vincoli uguali a Tented Archs, piu TA5 con ended e tranne "uno meno".
-
-
-\subsection{Left/Right Loop}
-Non dividiamo in 4 quadranti, ma piuttosto diamo un peso a tutte le
-regole, cioè sia a quelle standard dei plain archs (due quadranti superiori)
-sia a quelle specifiche per i left/right loops (due quadranti inferiori).
-
-I pesi per le probabilità sono opposti per i due tipi di regole, a seconda
-che si avvicinino o meno alla parte bassa o alta dell'immagine. L'idea è
-questa:
+\paragraph{Distance Constraints}
+In this paragraph, we give a total of three constraints for edges inside
+a tented or plain archs fingerprint that take into consideration the
+\emph{distance} between two minutiae.
+Let $M_1=(X_1,Y_1,D_1,_)$ and $M_2=(X_2,Y_2,D_2,_)$ be two minutiae.
   \begin{itemize}
-    \item
-      piu mi avvicino alla parte bassa dell'immagine e piu do peso alle
-      regole per i left/right loops. Faccio questo \emph{moltiplicando}
-      la probabilita dell'arco per il valore:
-        \begin{align*}
-          1 - Y_1 \cdot Y_2
-        \end{align*}
-    \item
-      similmente, piu mi avvicino alla parte alta dell'immagine e piu 
-      do peso alle regole per i plain archs.
+    \item \textbf{DIST\_ARCH\_1}: the more the position of $M_1$ and $M_2$
+          on the Y-axis is similar, the more an edge between $M_1$ and $M_2$
+          is likely to exist. We assign $\weight_{DA1}$ to the probability
+          of existence of this edge, where:
+            \begin{align*}
+              \weight_{DA1} \coloneqq 1-\frac{\lvert Y1-Y2\rvert}{max\_Y}
+            \end{align*}
+    \item \textbf{DIST\_ARCH\_2}: the same as the previous point, but with
+          the X-axis;
+    \item \textbf{DIST\_ARCH\_3}: the more the X-coordinate of the midpoint of 
+          the line between $M_1$ and $M_2$ is close to the half of the image,
+          the more this edge is likely to exists. In other words, we want that
+          minutiae that are \emph{not balanced} w.r.t. to the center of the
+          image (\eg one minuties close to the center but the other on the 
+          extreme right) are unlikely. We assign $\weight_{DA3}$ to the 
+          probability of existence of this edge, where:
+            \begin{align*}
+              \weight_{DA3} \coloneqq 1 -
+              \frac{\lvert \frac{\lvert X1-X2 \rvert}{2} - \frac{max\_X}{2}
+              \rvert}{max\_X}
+            \end{align*}
   \end{itemize}
 
 
+\subsection{Left and Right Loop}
+%Non dividiamo in 4 quadranti, ma piuttosto diamo un peso a tutte le
+%regole, cioè sia a quelle standard dei plain archs (due quadranti superiori)
+%sia a quelle specifiche per i left/right loops (due quadranti inferiori).
+%
+%I pesi per le probabilità sono opposti per i due tipi di regole, a seconda
+%che si avvicinino o meno alla parte bassa o alta dell'immagine. L'idea è
+%questa:
+%  \begin{itemize}
+%    \item
+%      piu mi avvicino alla parte bassa dell'immagine e piu do peso alle
+%      regole per i left/right loops. Faccio questo \emph{moltiplicando}
+%      la probabilita dell'arco per il valore:
+%        \begin{align*}
+%          1 - Y_1 \cdot Y_2
+%        \end{align*}
+%    \item
+%      similmente, piu mi avvicino alla parte alta dell'immagine e piu 
+%      do peso alle regole per i plain archs.
+%  \end{itemize}
+In this part, we describe the probability rules for the left and right loop
+fingerprints: you can refer to (a) and (b) of \cref{fig:patterns} for an example.
+Since, in their upper region, left and right loop fingerprints exhibit a behavior similar
+to that of tented and plain archs fingerprints, we decided to use the
+contraints we described above in these cases as well. In particular, we
+note that in the upper region, the behavior of a left or right fingerprint is
+very similar to that of a plain of tented arch. For this reason, we
+parameterized \emph{Constraint POS} with the variable $W$:
+  \begin{itemize}
+    \item
+      if we have a tented or plain archs fingerprint, then $W$ is $1$, meaning
+      that the rule has the same weight for all the points in the image;
+    \item
+      otherwise, in the case of left or right loop fingerprint, $W$ is
+      computed by the predicate \emph{weight\_rule(W,Y1,Y2)}, which assigns 
+      $W$ the value:
+        \begin{align*}
+          W \coloneqq 
+          \lvert 1-\frac{Y1}{max_Y} \rvert 
+          \cdot 
+          \lvert 1-\frac{Y2}{max_Y} \rvert
+        \end{align*}
+      Therefore, the more both points are close to the upper region of a
+      left or right loop fingerprint, the more we give weight to \emph{Constraint POS}.
+  \end{itemize}
+
+\paragraph{Constraint LOOP}
+Given a left or right loop fingerprint, we noted that the ending-type
+minutiae located in the \emph{lower region} of the image are clustered along
+a vertical line, like in Figure ... (\textcolor{red}{qua sarebbe bello mettere
+una figura tipo quelle che facevamo noi per capirci}).  
+This behavior is captured by \emph{Constraint LOOP}, which gives to
+the edge between two minutiae $M_1$ and $M_2$ belonging to a left or right loop
+the probability $\weight_{LOOP}$, where:
+  \begin{align*}
+    \weight_{LOOP} \coloneqq
+    (1-W)\cdot 
+    (1-\frac{\lvert X1-X2 \rvert}{max\_X})
+  \end{align*}
+Again, $(1-W)$ models the fact that the more the two minutiae are lower in 
+the image, the more weight we want to give to the rule.  
+
+
+\paragraph{Constraints LL and LR}
+Along the above-mentioned line on which the minutiae of a left or right loop
+fingerprint are located, we indentified another constraint: minutiae have to
+be \emph{balanced} along this line, in a very similar way we did for
+\emph{DIST\_ARCH\_3}. In other words, the more the midpoint of the straight line 
+between two minutiae is closer to the \emph{third quartile}\footnote{For third
+quartile, we wean the set of points $(X,Y)$ such that $Y=\frac{3}{4}\cdot
+max\_Y$} of the image, the more an edge between them is likely.
+
+Overall, the probability given by \emph{Constraint LL} to the existence of
+an edge is $\weight_{LL}$, where:
+  \begin{itemize}
+    \item
+      $\weight_{LL}^\prime \coloneqq 
+        (1-W) \cdot (1-\frac{X1}{max\_X}) \cdot (1-\frac{X2}{max\_X})$ 
+    \item
+      $\weight_{LL} \coloneqq
+        \weight_{LL}^\prime \cdot (1-
+        \frac{\lvert \frac{\lvert Y1-Y2 \rvert}{2} - \frac{3}{4}\cdot max\_Y
+        \rvert}{max\_Y})$
+  \end{itemize}
+Recall that the more $(1-W)$ is high, the more we are in the lower region
+of the image. In the same way, the more we are in the bottom left region of the
+image, the more $\weight_{LL}^\prime$ is high. 
+Finally, with $\weight_{LL}$ we are saying that the more the points are 
+\emph{balanced} w.r.t. the third quartile, the more an edge between them
+is likely to exist.
+
+\emph{Constrain RL} does the same expect that $\weight_{RL}^\prime$ is
+defined as follows:
+  \begin{align*}
+    \weight_{RL}^\prime \coloneqq 
+      (1-W)\cdot \frac{X1}{max\_X} \cdot \frac{X2}{max\_X}
+  \end{align*}
+in order to give more weight to the points in the bottom right region.
+
+
+
+\section{Conclusions}
+\textcolor{red}{TODO}
 
 
 
