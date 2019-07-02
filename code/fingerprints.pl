@@ -16,15 +16,14 @@
 
 % Symmetry breaking:
 % we take only left-to-right edges.
-:- edge(X1,Y1,X2,Y2),
+good_edge(X1,Y1,X2,Y2) :-
    minutia(X1,Y1,_,_),
    minutia(X2,Y2,_,_),
-   X1>X2.
-
-:- edge(X1,Y1,X2,Y2),
+   X1<X2.
+good_edge(X1,Y1,X2,Y2) :-
    minutia(X1,Y1,_,_),
    minutia(X2,Y2,_,_),
-   X1=X2, Y1>=Y2.
+   X1=X2,Y1<Y2.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% STRUCTURE PREDICATES
@@ -38,22 +37,25 @@ loops:- type_fingerprint(right_loop).
 %%% STRUCTURE CONSTRAINTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Constraint 1:
+% SA1:
 % Each B-minutia has exactly 3 incident edges.
-:- aggregate_all(count, edge(X,Y,X1,Y1), Count_1),
-   aggregate_all(count, edge(X2,Y2,X,Y), Count_2),
-   Sum is Count_1+Count_2, Sum =\= 3,
-   minutia(X,Y,_,b),
-   minutia(X1,Y1,_,_),
-   minutia(X2,Y2,_,_).
+valid_graph :- aggregate_all(count, edge(X,Y,X1,Y1), Count1),
+               aggregate_all(count, edge(X2,Y2,X,Y), Count2),
+               Sum is Count1+Count2, Sum == 3,
+               minutia(X,Y,_,b),
+               minutia(X1,Y1,_,_),
+               minutia(X2,Y2,_,_).
 
-% Constraint 2:
-% Each E-minutia has exactly 2 incident edges.
-:- aggregate_all(count, edge(X,Y,X1,Y1), Count_1),
-   aggregate_all(count, edge(X1,Y1,X,Y), Count_2),
-   Sum is Count_1+Count_2, Sum =\= 1,
-   minutia(X,Y,_,e),
-   minutia(X1,Y1,_,_).
+% SA2:
+% Each E-minutia has exactly 1 incident edge.
+valid_graph :- aggregate_all(count, edge(X,Y,X1,Y1), Count1),
+               aggregate_all(count, edge(X1,Y1,X,Y), Count2),
+               Sum is Count1+Count2, Sum == 1,
+               minutia(X,Y,_,e),
+               minutia(X1,Y1,_,_).
+
+valid_graph.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PROBABILITY RULES
@@ -67,28 +69,14 @@ weight_rule(W,_,_) :- archs,
 weight_rule(W,Y1,Y2) :- loops,
     			  		minutia(_,Y1,_,_),
     			  		minutia(_,Y2,_,_),
-    			  		W is float(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY)).
+    					max_Y(MY),
+    			  		W is float(abs(1 - rdiv(Y1,MY))*abs(1 - rdiv(Y2,MY))).
 
-%Constraint POS_1:
-%edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,T),
-%    						 minutia(X2,Y2,D2,T),
-% 							%Alpha1 is float(atan2(abs(Y1-Y2),abs(X1-X2))),
-%            			     Alpha1 is float(atan2(Y1-Y2,X1-X2)),
-%        					 Alpha2 is float(atan2(Y2-Y1,X2-X1)),
-%    						 %Diff1 is float(abs(D1-Alpha1)),
-%    						 %Diff2 is float(abs(D2-Alpha1)),
-%    						 Diff1 is float(pi - (abs(abs(D1-Alpha1) - pi))),
-%        					 Diff2 is float(pi - (abs(abs(D2-Alpha2) - pi))),
-%    						 weight_rule(W,Y1,Y2),
-%    						 Weight is float(W*(1 -rdiv((Diff1+Diff2),(2*pi)))).
-%OLD
-%edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,T),
-%               			  minutia(X2,Y2,D2,T),
-%    						  Weight is float(rdiv((pi - (abs(abs(D1-D2) - pi))),pi)).
 
-% Constraint POS_2:
+% Constraint POS:
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,_),
     						 minutia(X2,Y2,D2,_),
+    						 good_edge(X1,Y1,X2,Y2),
     						 %Alpha1 is float(atan2(abs(Y1-Y2),abs(X1-X2))),
             			     Alpha1 is float(atan2(Y1-Y2,X1-X2)),
         					 Alpha2 is float(atan2(Y2-Y1,X2-X1)),
@@ -98,13 +86,6 @@ edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,_),
         					 Diff2 is float(abs(D2-Alpha2)),
     						 weight_rule(W,Y1,Y2),
     						 Weight is float(W*(1 -rdiv((Diff1+Diff2),(2*pi)))).
-%OLD
-%edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,T1),
-%               			  minutia(X2,Y2,D2,T2),
-%    						  T1 \== T2,
-%    						  Half_pi is rdiv(pi,2),
-%    						  Weight is float(1-rdiv((Half_pi - abs((abs(abs(abs(D1-D2) - Half_pi)-Half_pi)-Half_pi))),Half_pi)).
-
 
 %%%%DISTANCE
 
@@ -112,6 +93,7 @@ edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,_),
 %Constraint DIST_ARCH_1:
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,_),
                				 minutia(X2,Y2,_,_),
+    						 good_edge(X1,Y1,X2,Y2),
     						 max_Y(MY),
     						 archs,
     						 Weight is float(1 - rdiv(abs(Y1-Y2),MY)).
@@ -119,6 +101,7 @@ edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,_),
 %Constraint DIST_ARCH_2:
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,b),
                				 minutia(X2,Y2,_,b),
+                             good_edge(X1,Y1,X2,Y2),
         					 max_X(MX),
                              archs,
     						 Weight is float(1 - rdiv(abs(X1-X2),MX)).
@@ -126,46 +109,46 @@ edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,b),
 %Constraint DIST_ARCH_3:
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
                				 minutia(X2,Y2,_,e),
+                             good_edge(X1,Y1,X2,Y2),
         					 max_X(MX),
     						 archs,
     						 Weight is float(1 - rdiv(abs(rdiv(abs(X1-X2),2) - rdiv(MX,2)), MX)).
 
 %%%LOOPS
 
-%%%Left loop
+%%% CONSTRAINT LL 
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
                				 minutia(X2,Y2,_,e),
+                             good_edge(X1,Y1,X2,Y2),
     						 type_fingerprint(left_loop),
         				     max_Y(MY),
           				     max_X(MX),
-        					 Weight_ruleY is float(1-(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY))),
-                             Weight_rule is float(Weight_ruleY*(((1 - rdiv(X1,MX)))*abs(1 - rdiv(X2,MX)))),
-    						 Weight is float(Weight_rule*(1 - rdiv(rdiv(abs(Y1-Y2),2) - rdiv(MY,4), MY))).
+        					 weight_rule(Weight_ruleY,Y1,Y2),
+                             Weight_rule is float((1-Weight_ruleY)*(((1 - rdiv(X1,MX)))*abs(1 - rdiv(X2,MX)))),
+    						 Weight is float(Weight_rule*(1 - rdiv(abs(rdiv(abs(Y1-Y2),2) - 3*rdiv(MY,4)), MY))).
     
-%%Right loop
+%%% CONSTRAINT RL 
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
                				 minutia(X2,Y2,_,e),
+                             good_edge(X1,Y1,X2,Y2),
     						 type_fingerprint(right_loop),
         				     max_Y(MY),
           				     max_X(MX),
-        					 Weight_ruleY is float(1-(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY))),
-                             Weight_rule is float(Weight_ruleY*((rdiv(X1,MX))*abs(rdiv(X2,MX)))),
-    						 Weight is float(Weight_rule*(1 - rdiv(rdiv(abs(Y1-Y2),2) - rdiv(MY,4), MY))).
+        					 weight_rule(Weight_ruleY,Y1,Y2),
+                             Weight_rule is float((1-Weight_ruleY)*((rdiv(X1,MX))*abs(rdiv(X2,MX)))),
+    						 Weight is float(Weight_rule*(1 - rdiv(abs(rdiv(abs(Y1-Y2),2) - 3*rdiv(MY,4)), MY))).
 
-%loops
+%%% CONSTRAINT LOOP
 edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,_,e),
                				 minutia(X2,Y2,_,e),
+                             good_edge(X1,Y1,X2,Y2),
     						 loops,
-        				     max_Y(MY),
-        					 Weight_rule is float(abs(1 - rdiv(Y1,MY)))*abs(1 - rdiv(Y2,MY)),
-    						 Weight is float(Weight_rule*(1- rdiv(abs(Y1-Y2),MY))).
+        				     max_X(MX),
+        					 weight_rule(Weight_rule,Y1,Y2),
+    						 Weight is float((1-Weight_rule)*(1- rdiv(abs(X1-X2),MX))).
 
 
-:- mostProb(X1,Y1,X2,Y2),
-   edge(X1,Y1,X2,Y2),
-   prob(edge(X1,Y1,X2,Y2),P1),
-   prob(edge(_,_,_,_),P2),
-   P1 < P2.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% KNOWLEDGE BASE

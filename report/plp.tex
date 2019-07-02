@@ -127,7 +127,7 @@ The \emph{knowledge base} of our program will be the set of all the
 the \textsf{type\_fingerprint/1} predicate and the \textsf{max\_X/1}
 and \textsf{max\_Y/1} predicates. For example:
   \begin{center}
-  \begin{lstlisting}[language=Prolog,frame = single]
+  \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
 max_Y(450).
 max_X(338).
 type_fingerprint(tented_archs).
@@ -148,7 +148,7 @@ with their probability of existence, we introduced the predicate
 where $(X_1,Y_1)$ are the coordinates of one end and $(X_2,Y_2)$
 the coordinate of the other end.
 Since in our setting we want undirected edges (their direction doesn't
-matter), some simmmetry breaking constraints can be added to the 
+matter), some simmetry breaking constraints can be added to the 
 encoding, aiming at removing specular but equivalent solutions; in
 particular, we constrained that there must exists only left-to-right
 edges.
@@ -160,13 +160,13 @@ in the final solution.
   \item
     each B-minutia has exactly $3$ incident edges. This has been achieved
     using the \texttt{aggregate\_all} predicate, as follows:
-      \begin{lstlisting}[language=Prolog,frame = single]
-:- aggregate_all(count, edge(X,Y,X1,Y1), Count_1),
-   aggregate_all(count, edge(X2,Y2,X,Y), Count_2),
-   Sum is Count_1+Count_2, Sum =\= 3,
-   minutia(X,Y,_,b),
-   minutia(X1,Y1,_,_),
-   minutia(X2,Y2,_,_).
+      \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
+valid_graph :- aggregate_all(count, edge(X,Y,X1,Y1), Count1),
+               aggregate_all(count, edge(X2,Y2,X,Y), Count2),
+               Sum is Count1+Count2, Sum == 3,
+               minutia(X,Y,_,b),
+               minutia(X1,Y1,_,_),
+               minutia(X2,Y2,_,_).      
       \end{lstlisting}
   \item
     similarly, each E-minutia has exactly $2$ incident edges.
