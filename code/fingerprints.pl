@@ -39,7 +39,7 @@ loops:- type_fingerprint(right_loop).
 
 % SA1:
 % Each B-minutia has exactly 3 incident edges.
-valid_graph :- aggregate_all(count, edge(X,Y,X1,Y1), Count1),
+b_inc_edge :-  aggregate_all(count, edge(X,Y,X1,Y1), Count1),
                aggregate_all(count, edge(X2,Y2,X,Y), Count2),
                Sum is Count1+Count2, Sum == 3,
                minutia(X,Y,_,b),
@@ -48,13 +48,13 @@ valid_graph :- aggregate_all(count, edge(X,Y,X1,Y1), Count1),
 
 % SA2:
 % Each E-minutia has exactly 1 incident edge.
-valid_graph :- aggregate_all(count, edge(X,Y,X1,Y1), Count1),
+e_inc_edge :- aggregate_all(count, edge(X,Y,X1,Y1), Count1),
                aggregate_all(count, edge(X1,Y1,X,Y), Count2),
                Sum is Count1+Count2, Sum == 1,
                minutia(X,Y,_,e),
                minutia(X1,Y1,_,_).
 
-valid_graph.
+valid_graph :- b_inc_edge, e_inc_edge.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
