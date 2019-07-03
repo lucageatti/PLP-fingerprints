@@ -2,6 +2,7 @@
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{pythonhighlight}
@@ -37,24 +38,24 @@ Programming, held at University of Udine in the academic year 2018-2019.
 \section{Introduction}
 
   \paragraph{The problem}
-    Modern \textit{biometrics}-based tool exploit the fact that these biometric characteristics, used for the verification of an individual’s identity, are unique from person to person.
-    That is way the majority of the studies in this field aim to generate biometric tools that are able to distinguish even twins.
+    Modern \textit{biometrics}-based tools exploit the fact that these biometric characteristics, used for the verification of an individual’s identity, are unique from person to person.
+    That is why the majority of the studies in this field aim to generate biometric tools that are able to distinguish even twins.
     
-    The purpose of these researches is to identify the uniqueness of each \textit{fingerprint}, facial feature or others characteristics of a person.
+    The purpose of these researches is to identify the uniqueness of each \textit{fingerprint}, facial feature or any others biometric characteristics of a person.
     For all these reasons, to the best of our knowledge, no study exists that tries to exploit heredity in such features.
-    \textit{Heredity} may be defined as the transmission of characteristics from the parents to the offspring.
-    Such traits as body size, hair color, skin color, eye color, etc. are known to be inherited.
-    The cell is the unit of structures and the unit of heredity.
-    Chromosomes in all of the body cells of a single individual are alike.
-    Thus, the individual functions as a single unit—alike in every cell yet different from all other people.
+    \textit{Heredity} is usually defined as \textit{the transmission of characteristics from the parents to the offspring}.
+    and is commonly known that traits as body size, hair color, skin color, eye color, etc. are inherited.
+    Researchers have found that the inheritance process is originated at cellular level as the cells are the unit of structures and, therefore, the units of heredity.
+    %Chromosomes in all of the body cells of a single individual are alike.
+    %Thus, the individual functions as a single unit—alike in every cell yet different from all other people.
     
     In this study we try to extrapolate from a fingerprint, the most used biometric characteristics, a data structure informative enough to be used for heredity-finding purposes.
-    This newly created data structure will be defined starting from the fingerprint \textit{minutiae}, informative points of the fingerprint itself often used for the \textquoteleft classical' biometrics-based recognition (The circles in Figure~\ref{fig:ske_min}).
+    This newly created data structure will be defined starting from the fingerprint \textit{minutiae}, informative points of the fingerprint itself often used for the \textquoteleft classical' biometrics-based recognition (The circles in~\cref{fig:ske_min}).
 %\paragraph{Fare un' introduzione su PLP.}
   \paragraph{Exploiting P.L.P.}
     The main idea of the study, as said before, is to capture a new fingerprint description starting from the widely used minutiae.
     This new structure can be pictured as a directed \textit{graph} with some constrains on the edges: each node can have at most one \textit{incoming edge} and at most two \textit{outgoing}.
-    The main idea behind this graph (shown in Figure~\ref{fig:ske_min_graph}) is that it should \textquoteleft emulate' the \textit{skeleton} (the black lines of Figure~\ref{fig:ske_min}) of the fingerprint.
+    The main idea behind this graph (shown in~\cref{fig:ske_min_graph}) is that it should \textquoteleft emulate' the \textit{skeleton} (the black lines of~\cref{fig:ske_min}) of the fingerprint.
     As reconstructing this graph could be somewhat trivial when in posses of the fingerprint's original image, it is not when the only available information are the fingerprint's minutiae.
     Unfortunately this is the case in most of the official databases where, due to space optimization, the fingerprints are only stored as a set of minutiae along with few other information.
     
@@ -68,15 +69,15 @@ Programming, held at University of Udine in the academic year 2018-2019.
     \begin{figure}
     	\centering
     	\includegraphics[width=0.35\linewidth]{img/ske_min_graph}
-    	\caption{The ideal graph of the fingerprint in Figure~\ref{fig:ske_min}.}
+    	\caption{The ideal graph of the fingerprint in~\cref{fig:ske_min}.}
     	\label{fig:ske_min_graph}
     \end{figure}%
     
-    This is way we decided to exploit \textit{Probabilistic Logic Programming}.
-   	In fact, having the fingerprints regular patterns (Figure~\ref{fig:patterns}), we could exploit this information to reconstruct the graph using probability.
+    This is why we decided to exploit \textit{Probabilistic Logic Programming}.
+   	In fact, having all the fingerprints regular patterns (\cref{fig:patterns}), we could exploit these information to reconstruct the desired graph using probability.
    	In particular our aim is to associate each edge with a percentage of existence based on various factors such as: length, angle, position, crossing with other edges, incoming and outgoing nodes.
    	Once that all the edges have been labeled the result will be a probabilistic graph that could be used as base for heredity-base recognition.
-   	Through the use of P.L.P. it has been possible to characterize probabilistic constraints that allowed the graph reconstruction.
+   	Through the use of P.L.P. it has been possible to characterize probabilistic constraints that allowed this graph reconstruction.
    	As further step we though to exploit the \textquoteleft learning' capabilities of this paradigm allowing the program to infer the best weight for each constraints relative to each pattern.
 
     \begin{figure}
@@ -96,7 +97,7 @@ Programming, held at University of Udine in the academic year 2018-2019.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Encoding}
 \label{sec:encoding}
-We start by describing the basic predicates we introduced to model
+We start by describing the basic predicates introduced to model
 the problem. In order to model a minutia, we introduced the predicate
   \begin{center}
     \textsf{minutia(X,Y,D,T)}
@@ -118,8 +119,8 @@ where $\textsf{T}\in\{
   \textsf{right\_loop},
   \textsf{whorl}
 \}$; 
-basically, it express which type the overall fingerprint belongs to.
-(see \cref{fig:patterns})
+basically, it expresses which type the overall fingerprint belongs to
+(see~\cref{fig:patterns}).
 Finally, \textsf{max\_X(N)} and \textsf{max\_Y(N)} express the number
 of pixels of the image along the X-axis and the Y-axis, respectively.
 The \emph{knowledge base} of our program will be the set of all the 
@@ -140,14 +141,14 @@ minutia(94,104,0.09966865249116204,b).
 minutia(62,272,5.135242906517631,b).
   \end{lstlisting}
   \end{center}
-Since what we want to entail are the edges between the minutiae along
+Since what we want to retrieve are the edges between the minutiae along
 with their probability of existence, we introduced the predicate
   \begin{center}
     \textsf{edge($X_1,Y_1,X_2,Y_2$)}
   \end{center}
 where $(X_1,Y_1)$ are the coordinates of one end and $(X_2,Y_2)$
 the coordinate of the other end.
-Since in our setting we want undirected edges (their direction doesn't
+Since in our setting we want undirected edges (their direction does not
 matter), some simmetry breaking constraints can be added to the 
 encoding, aiming at removing specular but equivalent solutions; in
 particular, we constrained that there must exists only left-to-right
@@ -212,8 +213,8 @@ these two structure constraints.
 %  \end{align*}
 %We give the value $\weight_x$ and $\weight_y$ to the probability 
 %of existence of an edge between $M_1$ and $M_2$.
-In this part, we describe probability rules for the tented and plain archs
-fingerprints: refer to (c) and (d) of \cref{fig:patterns} for an example.
+In this part, we describe probability rules for the tented and plain archs 
+fingerprints: you can refer to fig. 3c, fig. 3d or to~\cref{fig:arch} as examples.
 
 \paragraph{Constraint POS}
 In this paragraph, we give a constraint for the edges inside a tented
@@ -224,8 +225,8 @@ or plain arch fingerprint,
 we note that the probability of existence of an edge between these two
 respects this rule: the more the directions of both the minutiae
 is close to the straight line connecting $M_1$ and $M_2$ the more the
-probability is high.
-Let $M_1=(X_1,Y_1,D_1,_)$ and $M_2=(X_2,Y_2,D_2,_)$ be two minutiae.
+probability is high (the red lines in~\cref{fig:arch}).
+Let $M_1=(X_1,Y_1,D_1,\_)$ and $M_2=(X_2,Y_2,D_2,\_)$ be two minutiae.
 Let $\alpha_1=\arctantwo(Y1-Y2,X1-X2)$ and $\alpha_2=\arctantwo(Y2-Y1,X2-X1)$:
 $\alpha_1$ (resp. $\alpha_2$) measures the value of the angle (in randians) between 
 the direction of $M_1$ (resp. $M_2$) and the straight line between $M_1$ and
@@ -244,7 +245,7 @@ of existence of an edge between $M_1$ and $M_2$.
 In this paragraph, we give a total of three constraints for edges inside
 a tented or plain archs fingerprint that take into consideration the
 \emph{distance} between two minutiae.
-Let $M_1=(X_1,Y_1,D_1,_)$ and $M_2=(X_2,Y_2,D_2,_)$ be two minutiae.
+Let $M_1=(X_1,Y_1,D_1,\_)$ and $M_2=(X_2,Y_2,D_2,\_)$ be two minutiae.
   \begin{itemize}
     \item \textbf{DIST\_ARCH\_1}: the more the position of $M_1$ and $M_2$
           on the Y-axis is similar, the more an edge between $M_1$ and $M_2$
@@ -257,7 +258,7 @@ Let $M_1=(X_1,Y_1,D_1,_)$ and $M_2=(X_2,Y_2,D_2,_)$ be two minutiae.
           the X-axis;
     \item \textbf{DIST\_ARCH\_3}: the more the X-coordinate of the midpoint of 
           the line between $M_1$ and $M_2$ is close to the half of the image,
-          the more this edge is likely to exists. In other words, we want that
+          the more this edge is likely to exist. In other words, we want that
           minutiae that are \emph{not balanced} w.r.t. to the center of the
           image (\eg one minuties close to the center but the other on the 
           extreme right) are unlikely. We assign $\weight_{DA3}$ to the 
@@ -291,7 +292,7 @@ Let $M_1=(X_1,Y_1,D_1,_)$ and $M_2=(X_2,Y_2,D_2,_)$ be two minutiae.
 %      do peso alle regole per i plain archs.
 %  \end{itemize}
 In this part, we describe the probability rules for the left and right loop
-fingerprints: you can refer to (a) and (b) of \cref{fig:patterns} for an example.
+fingerprints: you can refer to fig. 3a, fig. 3b or to~\cref{fig:loop} as examples.
 Since, in their upper region, left and right loop fingerprints exhibit a behavior similar
 to that of tented and plain archs fingerprints, we decided to use the
 contraints we described above in these cases as well. In particular, we
@@ -304,7 +305,7 @@ parameterized \emph{Constraint POS} with the variable $W$:
       that the rule has the same weight for all the points in the image;
     \item
       otherwise, in the case of left or right loop fingerprint, $W$ is
-      computed by the predicate \emph{weight\_rule(W,Y1,Y2)}, which assigns 
+      computed by the predicate $weight\_rule(W,Y1,Y2)$, which assigns 
       $W$ the value:
         \begin{align*}
           W \coloneqq 
@@ -312,15 +313,14 @@ parameterized \emph{Constraint POS} with the variable $W$:
           \cdot 
           \lvert 1-\frac{Y2}{max_Y} \rvert
         \end{align*}
-      Therefore, the more both points are close to the upper region of a
+      Therefore, the closer the two points are to the upper region of a
       left or right loop fingerprint, the more we give weight to \emph{Constraint POS}.
   \end{itemize}
 
 \paragraph{Constraint LOOP}
 Given a left or right loop fingerprint, we noted that the ending-type
 minutiae located in the \emph{lower region} of the image are clustered along
-a vertical line, like in Figure ... (\textcolor{red}{qua sarebbe bello mettere
-una figura tipo quelle che facevamo noi per capirci}).  
+a vertical line as shown in Figure~\cref{fig:loop}.  
 This behavior is captured by \emph{Constraint LOOP}, which gives to
 the edge between two minutiae $M_1$ and $M_2$ belonging to a left or right loop
 the probability $\weight_{LOOP}$, where:
@@ -331,6 +331,7 @@ the probability $\weight_{LOOP}$, where:
   \end{align*}
 Again, $(1-W)$ models the fact that the more the two minutiae are lower in 
 the image, the more weight we want to give to the rule.  
+
 
 
 \paragraph{Constraints LL and LR}
@@ -368,12 +369,56 @@ defined as follows:
       (1-W)\cdot \frac{X1}{max\_X} \cdot \frac{X2}{max\_X}
   \end{align*}
 in order to give more weight to the points in the bottom right region.
-
-
+\begin{figure}
+	\centering
+   	\begin{subfigure}{.48\textwidth}
+   			\centering
+	\includegraphics[width=0.9\linewidth]{img/arch}
+	\caption{Skeleton of an \textit{arch} type. In red are highlighted examples of the describe ridges.}
+	\label{fig:arch}
+\end{subfigure}%
+\hfill
+\begin{subfigure}{.48\textwidth}
+	\centering
+	\includegraphics[width=0.86\linewidth]{img/loop}
+	\caption{Skeleton of an \textit{left-loop} type. In blue the quadrant that encapsulates the loop while in red and green the parts captured by the arch constraints.}
+	\label{fig:loop}
+\end{subfigure}%
+\caption{Example of the properties captured by our constraints.}
+\label{fig:example}
+\end{figure}
 
 \section{Conclusions}
-\textcolor{red}{TODO}
+During this work we studied and tackled the problem of reconstructing the skeleton of a fingerprint only using the available information on the official databases, \ie the \emph{minutiae}.
+As already said we are exploiting probabilistic logic programming to reconstruct the \textquotedblleft most probable skeleton".
+Thanks to our script (the file named \textquotedblleft \textit{fingerprints.pl}") it is possible to extract the list of edges with relative probability. Then with a simple iterative process on the script it would be possible to retrieve the whole graph.
+At every iteration we add the most probable edge found at the previous iteration to the \textquotedblleft bad\_edges" so we can find the new most probable edge.
 
+As we can see in~\cref{fig:concl} the graph generated through our tool is somewhat similar to the one that has been extrapolated from the binary image itself. The two graphs obviously differ but the results are promising and this tool is certainly to keep in mind for future studies on inheritance on fingerprints.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}{.48\textwidth}
+		\centering
+		\includegraphics[width=0.9\linewidth]{img/missing}
+		\caption{Graph obtained from the original binary image.}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.48\textwidth}
+		\centering
+		\includegraphics[width=0.86\linewidth]{img/missing}
+		\caption{Graph obtained from our script.}
+	\end{subfigure}%
+	\caption{Graphs confrontation.}
+	\label{fig:concl}
+\end{figure}
+
+As future works we plan to:
+\begin{itemize}
+	\item Increase the precision of our tool by introducing more constraints for each type of fingerprint.
+	\item Automatize the iterative procedure to permit an easier use of the tool. In particular we aim to formalize directly in the \textit{plp} file the printing of the whole graph.
+	\item As we have a large set of fingerprints images ($\approx 3\ 000$) we think that exploiting the learning component of \textit{cplint} could bring really promising results.
+\end{itemize}
 
 
 
