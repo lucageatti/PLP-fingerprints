@@ -13,6 +13,7 @@
 \usepackage{multicol}
 \usepackage{xparse}
 \usepackage{listings}
+\usepackage[inline]{enumitem}
 
 \NewDocumentCommand\weight{}{\textsf{weight}\xspace}
 \DeclareMathOperator{\arctantwo}{arctan2}
@@ -43,15 +44,26 @@ Programming, held at University of Udine in the academic year 2018-2019.
     
     The purpose of these researches is to identify the uniqueness of each \textit{fingerprint}, facial feature or any others biometric characteristics of a person.
     For all these reasons, to the best of our knowledge, no study exists that tries to exploit heredity in such features.
-    \textit{Heredity} is usually defined as \textit{the transmission of characteristics from the parents to the offspring}.
+    \textit{Heredity} is usually defined as \textit{the transmission of characteristics from the parents to the offspring}
     and is commonly known that traits as body size, hair color, skin color, eye color, etc. are inherited.
     Researchers have found that the inheritance process is originated at cellular level as the cells are the unit of structures and, therefore, the units of heredity.
     %Chromosomes in all of the body cells of a single individual are alike.
     %Thus, the individual functions as a single unit—alike in every cell yet different from all other people.
     
-    In this study we try to extrapolate from a fingerprint, the most used biometric characteristics, a data structure informative enough to be used for heredity-finding purposes.
+    In this study we try to extrapolate from a fingerprint, the most used biometric characteristics, a data structure informative enough to be used for heredity-finding purposes (as explained in the following).
     This newly created data structure will be defined starting from the fingerprint \textit{minutiae}, informative points of the fingerprint itself often used for the \textquoteleft classical' biometrics-based recognition (The circles in~\cref{fig:ske_min}).
-%\paragraph{Fare un' introduzione su PLP.}
+  \paragraph{Fingerprint Inheritance}\label{par:heredity}
+  The main objective of this study is to reconstruct through \textit{P.L.P.} a data structure that can be used for inheritance recognition on fingerprint.
+  We decided to tackle this specific problem after reading several publications that confirmed our idea that fingerprints, as most of our physical characteristics, are, in a certain sense, inherited.
+  Most of these studies found connections between fingerprints of relative but not a precise pattern that could describe this property.
+  Our research aims to define more formally what exactly makes two fingerprints related w.r.t. inheritance thanks to the use of
+  \begin{enumerate*}[label=\roman*)]
+  	\item logic programming (\textit{A.S.P.}, \textit{C.L.P.});
+  	\item images classification (\textit{Convolutional Neural Networks}); and
+  	\item pattern analysis.
+  \end{enumerate*}
+	All of these techniques need to be used on a data structure that has to be more informative that the ones already used to represent fingerprints in the modern biometric-based tools. That is why we chose the graph of the minutiae and this graph is exactly what this work aims to extrapolate from each fingerprint (often store with incomplete information).
+  
   \paragraph{Exploiting P.L.P.}
     The main idea of the study, as said before, is to capture a new fingerprint description starting from the widely used minutiae.
     This new structure can be pictured as a directed \textit{graph} with some constrains on the edges: each node can have at most one \textit{incoming edge} and at most two \textit{outgoing}.
@@ -460,22 +472,26 @@ the whole graph: at every iteration we add the most probable edge found at the p
 iteration to the \textquotedblleft bad\_edges" so we can find the new most probable edge.
 
 As we can see in~\cref{fig:concl} the graph generated through our tool is somewhat similar 
-to the one that has been extrapolated from the binary image itself. 
-The two graphs obviously differ but the results are promising and this tool is certainly 
+to the one that has been extrapolated from the binary image itself.
+An important factor to keep in mind is that the image obtained by out \textit{P.L.P.} procedure~\cref{fig:concl-plp}, even if it differs from the original one~\cref{fig:concl-c}, follows accurately what we formalized.
+This means that the \textit{P.L.P.} script needs only refinements in the constraints to produce results that can be representative of real fingerprint.
+That is why, even if the two graphs obviously differ, the results are promising and this tool is certainly 
 to keep in mind for future studies on inheritance on fingerprints.
 
 \begin{figure}
 	\centering
 	\begin{subfigure}{.48\textwidth}
 		\centering
-		\includegraphics[width=0.9\linewidth]{img/missing}
+		\includegraphics[width=0.9\linewidth]{img/c-final}
 		\caption{Graph obtained from the original binary image.}
+					\label{fig:concl-c}
 	\end{subfigure}%
 	\hfill
 	\begin{subfigure}{.48\textwidth}
 		\centering
-		\includegraphics[width=0.86\linewidth]{img/missing}
+		\includegraphics[width=0.86\linewidth]{img/plp-final}
 		\caption{Graph obtained from our script.}
+			\label{fig:concl-plp}
 	\end{subfigure}%
 	\caption{Graphs confrontation.}
 	\label{fig:concl}
@@ -486,7 +502,7 @@ As future works we plan to:
 	\item Increase the precision of our tool by introducing more constraints for each 
         type of fingerprint.
 	\item Automatize the iterative procedure to permit an easier use of the tool. 
-        In particular we aim to formalize directly in the \textit{plp} file the printing 
+        In particular we aim to formalize directly in the \textit{P.L.P.} file the printing 
         of the whole graph.
 	\item As we have a large set of fingerprints images ($\approx 3\ 000$) we think that 
         exploiting the learning component of \textit{cplint} could bring really promising results.
