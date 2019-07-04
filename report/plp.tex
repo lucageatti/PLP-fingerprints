@@ -74,11 +74,19 @@ Programming, held at University of Udine in the academic year 2018-2019.
     \end{figure}%
     
     This is why we decided to exploit \textit{Probabilistic Logic Programming}.
-   	In fact, having all the fingerprints regular patterns (\cref{fig:patterns}), we could exploit these information to reconstruct the desired graph using probability.
-   	In particular our aim is to associate each edge with a percentage of existence based on various factors such as: length, angle, position, crossing with other edges, incoming and outgoing nodes.
-   	Once that all the edges have been labeled the result will be a probabilistic graph that could be used as base for heredity-base recognition.
-   	Through the use of P.L.P. it has been possible to characterize probabilistic constraints that allowed this graph reconstruction.
-   	As further step we though to exploit the \textquoteleft learning' capabilities of this paradigm allowing the program to infer the best weight for each constraints relative to each pattern.
+   	In fact, having all the fingerprints regular patterns
+    (\cref{fig:patterns}), we could exploit these informations to reconstruct 
+    the desired graph using probabilities.
+   	In particular our aim is to associate each edge with a probability of existence 
+    based on various factors such as: length, angle, position, crossing with other edges, 
+    incoming and outgoing nodes.
+   	Once that all the edges have been labeled with a probability, the result will be a 
+    probabilistic graph that could be used as base for heredity-base recognition.
+   	Through the use of P.L.P., it has been possible to characterize probabilistic 
+    constraints that allowed this graph reconstruction.
+   	As a future development, we plan to exploit the \textquoteleft learning' capabilities of 
+    this paradigm, allowing the program to infer the best weight for each constraints 
+    relative to each pattern.
 
     \begin{figure}
 		\centering
@@ -154,7 +162,7 @@ encoding, aiming at removing specular but equivalent solutions; in
 particular, we constrained that there must exists only left-to-right
 edges.
 
-\subsection{Structure constraints}
+\subsection{Structure constraints}\label{sub:structure_cons}
 We introduce two structure constraints to forbid wrong edges
 in the final solution.
 \begin{itemize}
@@ -388,13 +396,73 @@ in order to give more weight to the points in the bottom right region.
 \label{fig:example}
 \end{figure}
 
-\section{Conclusions}
-During this work we studied and tackled the problem of reconstructing the skeleton of a fingerprint only using the available information on the official databases, \ie the \emph{minutiae}.
-As already said we are exploiting probabilistic logic programming to reconstruct the \textquotedblleft most probable skeleton".
-Thanks to our script (the file named \textquotedblleft \textit{fingerprints.pl}") it is possible to extract the list of edges with relative probability. Then with a simple iterative process on the script it would be possible to retrieve the whole graph.
-At every iteration we add the most probable edge found at the previous iteration to the \textquotedblleft bad\_edges" so we can find the new most probable edge.
+\section{Computation of the graph}
+With the query 
+  \begin{center}
+  \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
+findall([X1,Y1,X2,Y2,P],prob(edge(X1,Y1,X2,Y2),P),Results).
+  \end{lstlisting}
+  \end{center}
+we can retrieve all the results of the unification of \texttt{edge(X1,Y1,X2,Y2)}
+with the logic program's rules. The result is a list of this type:
+  \begin{center}
+  \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
+Results = [
+  [39, 302, 58, 256, 0.8761637920914388],
+  [39, 302, 338, 84, 0.9757900620331998],
+  [39, 302, 62, 272, 0.921175664640193],
+  [39, 302, 47, 450, 0.901470217393874],
+  ...
+  [47, 450, 338, 84, 0.9445871662832741],
+  [94, 104, 338, 84, 0.9562089492578153]
+]
+  \end{lstlisting}
+  \end{center}
+Each tuple in the list is an edge labeled with its probability of existence,
+based on the rules we described above. This is \emph{not} the final graph
+we want to retrieve, since it is just the collection of all the results
+of the unification. Thus, we propose the following procedure:
+  \begin{enumerate}
+    \item
+      from the result of the \texttt{findall} query, take the tuple
+      \texttt{[X1,Y1,X2,Y2,P]} with the highest probability \texttt{P};
+    \item
+      add the corresponing edge to the knowledge base, \ie
+      add \texttt{edge(X1,Y1,X2,Y2)} to the program;
+    \item
+      execute again the \texttt{findall} query
+      \begin{enumerate}
+        \item
+          if the result is empty, then it means that the edge we just
+          added violates some structure constraints (see
+          \cref{sub:structure_cons}); thus, we delete it from the knowledge
+          base and from the result of the latest \texttt{findall} query, and we
+          go back to Point 1; 
+        \item
+          otherwise, we can just go back to Point 1 and reiterate the process.
+      \end{enumerate}
+  \end{enumerate}
+\paragraph{Termination condition:} once all the edge inside
+the latest \texttt{findall}'s list are no-good, \ie once this list becomes empty,
+then we stop the algorithm: the knowledge base contains the graph for the
+fingerprint.
 
-As we can see in~\cref{fig:concl} the graph generated through our tool is somewhat similar to the one that has been extrapolated from the binary image itself. The two graphs obviously differ but the results are promising and this tool is certainly to keep in mind for future studies on inheritance on fingerprints.
+\section{Conclusions}
+During this work we studied and tackled the problem of reconstructing the skeleton 
+of a fingerprint only using the available information on the official databases, 
+\ie the \emph{minutiae}.
+As already said we are exploiting probabilistic logic programming to reconstruct the 
+\textquotedblleft most probable skeleton".
+Thanks to our script (the file named \textquotedblleft \textit{fingerprints.pl}") it 
+is possible to extract the list of edges with relative probability. 
+Then with a simple iterative process on the script it would be possible to retrieve 
+the whole graph: at every iteration we add the most probable edge found at the previous 
+iteration to the \textquotedblleft bad\_edges" so we can find the new most probable edge.
+
+As we can see in~\cref{fig:concl} the graph generated through our tool is somewhat similar 
+to the one that has been extrapolated from the binary image itself. 
+The two graphs obviously differ but the results are promising and this tool is certainly 
+to keep in mind for future studies on inheritance on fingerprints.
 
 \begin{figure}
 	\centering
@@ -415,9 +483,13 @@ As we can see in~\cref{fig:concl} the graph generated through our tool is somewh
 
 As future works we plan to:
 \begin{itemize}
-	\item Increase the precision of our tool by introducing more constraints for each type of fingerprint.
-	\item Automatize the iterative procedure to permit an easier use of the tool. In particular we aim to formalize directly in the \textit{plp} file the printing of the whole graph.
-	\item As we have a large set of fingerprints images ($\approx 3\ 000$) we think that exploiting the learning component of \textit{cplint} could bring really promising results.
+	\item Increase the precision of our tool by introducing more constraints for each 
+        type of fingerprint.
+	\item Automatize the iterative procedure to permit an easier use of the tool. 
+        In particular we aim to formalize directly in the \textit{plp} file the printing 
+        of the whole graph.
+	\item As we have a large set of fingerprints images ($\approx 3\ 000$) we think that 
+        exploiting the learning component of \textit{cplint} could bring really promising results.
 \end{itemize}
 
 
