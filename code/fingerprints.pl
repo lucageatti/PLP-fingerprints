@@ -25,8 +25,20 @@ good_edge(X1,Y1,X2,Y2) :-
    minutia(X2,Y2,_,_),
    X1=X2,Y1<Y2.
 
+
+%Weights
+weight_rule(W,_,_) :- 
+              archs,
+    				  W is 1.
+weight_rule(W,Y1,Y2) :- 
+                loops,
+    			  		minutia(_,Y1,_,_),
+    			  		minutia(_,Y2,_,_),
+    					  max_Y(MY),
+    			  		W is float(abs(1 - rdiv(Y1,MY))*abs(1 - rdiv(Y2,MY))).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% STRUCTURE PREDICATES
+%%% TYPE PREDICATES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 archs:- type_fingerprint(tented_archs).
 archs:- type_fingerprint(plain_archs).
@@ -57,33 +69,24 @@ e_inc_edge :-  aggregate_all(count, edge(X,Y,X1,Y1), Count1),
 valid_graph :- b_inc_edge, e_inc_edge.
 valid_graph.
 
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PROBABILITY RULES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%DIRECTION
 
-%%%Weights
-weight_rule(W,_,_) :- archs,
-    				  W is 1.
-weight_rule(W,Y1,Y2) :- loops,
-    			  		minutia(_,Y1,_,_),
-    			  		minutia(_,Y2,_,_),
-    					max_Y(MY),
-    			  		W is float(abs(1 - rdiv(Y1,MY))*abs(1 - rdiv(Y2,MY))).
-
-
-% Constraint POS:
-edge(X1,Y1,X2,Y2): Weight :- minutia(X1,Y1,D1,_),
+% Direction Constraint:
+edge(X1,Y1,X2,Y2): Weight :- 
+                 minutia(X1,Y1,D1,_),
     						 minutia(X2,Y2,D2,_),
     						 good_edge(X1,Y1,X2,Y2),
-    						 %Alpha1 is float(atan2(abs(Y1-Y2),abs(X1-X2))),
-            			     Alpha1 is float(atan2(Y1-Y2,X1-X2)),
-        					 Alpha2 is float(atan2(Y2-Y1,X2-X1)),
-    						 %Diff1 is float(abs(D1-Alpha1)),
-    						 %Diff2 is float(abs(D2-Alpha1)),
+            		 Alpha1 is float(atan2(Y1-Y2,X1-X2)),
+        				 Alpha2 is float(atan2(Y2-Y1,X2-X1)),
     						 Diff1 is float(abs(D1-Alpha1)),
-        					 Diff2 is float(abs(D2-Alpha2)),
+        				 Diff2 is float(abs(D2-Alpha2)),
     						 weight_rule(W,Y1,Y2),
     						 Weight is float(W*(1 -rdiv((Diff1+Diff2),(2*pi)))).
 

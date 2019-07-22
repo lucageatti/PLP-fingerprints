@@ -7,18 +7,21 @@
 \usepackage{float}
 \usepackage{pythonhighlight}
 \usepackage[all]{foreign}
-\usepackage{cleveref}
+\usepackage{hyperref}
+\usepackage[capitalise]{cleveref}
 \usepackage{fmtcount}
 \usepackage{verbatim}
 \usepackage{multicol}
 \usepackage{xparse}
 \usepackage{listings}
 \usepackage[inline]{enumitem}
+\usepackage{todonotes}
 
 \NewDocumentCommand\weight{}{\textsf{weight}\xspace}
 \DeclareMathOperator{\arctantwo}{arctan2}
 
-\title{Probabilistic Logic Programming Exam}
+\title{Fingerprint Graph Reconstruction via Probabilistic
+       Logic Programming}
 \author{
         Francesco Fabiano, Luca Geatti\\
         \footnotesize Department of Mathematics, Computer Science and Physics \\
@@ -31,88 +34,192 @@
 \begin{document}
 \maketitle
 \paragraph{Abstract}
-This is a report for the exam of the PhD course on Probabilistic Logic
-Programming, held at University of Udine in the academic year 2018-2019.
+Fingerprint recognition is a problem of fundamental importance nowadays.
+Commonly, fingerprints are represented in databases as a set of
+\emph{minutiae}, \ie points in the 2D space of an image with a direction and
+a type attached. A fundamental problem is to reconstruct from this set of
+points a graph representing the original fingerprint
+\cite{isenor1986fingerprint}.  Probabilistic logic programming (PLP, for short)
+reveals it self as a powerful framework to reason about domains characterized
+by uncertainty. Among the main techniques, LPADs \cite{vennekens2004logic}
+pheraps are the most general, allowing one to annotate each atom in the head of
+a rule with a probability.  In this paper, we give an encoding of the
+fingerprint graph reconstruction using PLP; in particular, we give a set of
+rules which define the probability of existence of an edge and a set of
+structure constraints to forbid wrong graphs. Notably, the probability attached
+to each of the rules are not fixed \apriori: instead, the rules are
+parametric, in that their probabilities are real-values variables; this allowed
+us to model with greater precision the problem under consideration.  In end, we
+propose an iterative algorithm to compute effectively the fingerprint graph. 
+
+\emph{This is a report for the PhD course exam on Probabilistic Logic Programming, 
+held at University of Udine in the academic year 2018-2019 by Elena Bellodi.}
+
 
 
 
 \section{Introduction}
+Modern \textit{biometrics}-based tools exploit the fact that biometric
+characteristics, used for the verification of an individual’s identity, are
+unique from person to person.  This is why the majority of the studies in this
+field aim to generate biometric tools that are able to distinguish even twins
+\cite{}.
+%
+The purpose of above-mentioned studies is to identify the uniqueness of each
+\textit{fingerprint}, facial feature or any others biometric characteristics of
+a person. Fingerprints in particular play a central role, in that they
+represent the most used biometric characteristics. A fingerprint's image is not
+stored in the database, commonly due to space issues; instead, only a set of
+point of the original image, called \emph{minutiae}, is stored.
 
-  \paragraph{The problem}
-    Modern \textit{biometrics}-based tools exploit the fact that biometric characteristics, used for the verification of an individual’s identity, are unique from person to person.
-    That is why the majority of the studies in this field aim to generate biometric tools that are able to distinguish even twins.
-    
-    The purpose of these researches is to identify the uniqueness of each \textit{fingerprint}, facial feature or any others biometric characteristics of a person.
-    For all these reasons, to the best of our knowledge, no study exists that tries to exploit heredity in such features.
-    \textit{Heredity} is usually defined as \textit{the transmission of characteristics from the parents to the offspring}
-    and is commonly known that traits as body size, hair color, skin color, eye color, etc. are inherited.
-    Researchers have found that the inheritance process is originated at cellular level as the cells are the unit of structures and, therefore, the units of heredity.
-    %Chromosomes in all of the body cells of a single individual are alike.
-    %Thus, the individual functions as a single unit—alike in every cell yet different from all other people.
-    
-    In this study we try to extrapolate from a fingerprint, the most used biometric characteristics, a data structure informative enough to be used for heredity-finding purposes (as explained in the following).
-    This newly created data structure will be defined starting from the
-    fingerprint \textit{minutiae}, informative points of the fingerprint itself
-    often used for the \textquoteleft classical' biometrics-based recognition
-    (the circles in~\cref{fig:ske_min}).
-  \paragraph{Fingerprint Inheritance}\label{par:heredity}
-  The main objective of this study is to reconstruct through \textit{P.L.P.} a data structure that can be used for inheritance recognition on fingerprint.
-  We decided to tackle this specific problem after reading several publications that confirmed our idea that fingerprints, as most of our physical characteristics, are, in a certain sense, inherited.
-  Most of these studies found connections between fingerprints of relatives but not a precise pattern that could describe this property.
-  Our research aims to define more formally what exactly makes two fingerprints related w.r.t. inheritance thanks to the use of
-  \begin{enumerate*}[label=\roman*)]
-  	\item logic programming (\textit{A.S.P.}, \textit{C.L.P.});
-  	\item images classification (\textit{Convolutional Neural Networks}); and
-  	\item pattern analysis.
-  \end{enumerate*}
-	All of these techniques need to be used on a data structure that has to be more informative that the ones already used to represent fingerprints in the modern biometric-based tools. That is why we chose the graph of the minutiae and this graph is exactly what this work aims to extrapolate from each fingerprint (often store with incomplete information).
-Therefore, this report has to be intended as a first step and a part of a major
-study about fingerprint inheritance.
+In this paper, we focus on fingerprint recognition, that is the problem of
+checking whether two fingerprints images really represent the same fingerprint.
+%
+Among the main techniques, a particularly interesting one creates a graph from
+the set of minutiae and then uses \emph{graph matching} to check the equality
+of two fingerprints \cite{isenor1986fingerprint}. Therefore, a key problem is
+to reconstruct from a set of minutiae the most likely graph, which is the main
+problem we tackle in this paper. We refer to this as the \emph{fingerprint
+graph reconstruction problem}.
 
-  \paragraph{Exploiting P.L.P.}
-    The main idea of the study, as said before, is to capture a new fingerprint description starting from the widely used minutiae.
-    This new structure is a particular type of directed \textit{graph} subject
-    to a number of constraints on the edges: each node can have at most one \textit{incoming edge} and at most two \textit{outgoing}.
-    The main idea behind this graph (shown in~\cref{fig:ske_min_graph}) is that it should \textquoteleft emulate' the \textit{skeleton} (the black lines of~\cref{fig:ske_min}) of the fingerprint.
-    As reconstructing this graph could be somewhat trivial when in posses of the fingerprint's original image, it is not when the only available information are the fingerprint's minutiae.
-    Unfortunately this is the case in most of the official databases where, due to space optimization, the fingerprints are only stored as a set of minutiae along with few other information.
-    
-   	\begin{figure}
-    	\centering
-    	\includegraphics[width=0.35\linewidth]{img/ske_min}
-    	\caption{The skeleton and the minutiae of a fingerprint.}
-    	\label{fig:ske_min}
-    \end{figure}
-    
-    \begin{figure}
-    	\centering
-    	\includegraphics[width=0.35\linewidth]{img/ske_min_graph}
-    	\caption{The ideal graph of the fingerprint in~\cref{fig:ske_min}.}
-    	\label{fig:ske_min_graph}
-    \end{figure}%
-    
-    This is why we decided to exploit \textit{Probabilistic Logic Programming}.
-   	In fact, having all the fingerprints regular patterns
-    (\cref{fig:patterns}), we could exploit these informations to reconstruct 
-    the desired graph using probabilities.
-   	In particular our aim is to associate each edge with a probability of existence 
-    based on various factors such as: length, angle, position, crossing with other edges, 
-    incoming and outgoing nodes.
-   	Once that all the edges have been labeled with a probability, the result will be a 
-    probabilistic graph that could be used as base for heredity-base recognition.
-   	Through the use of P.L.P., it has been possible to characterize probabilistic 
-    constraints that allowed this graph reconstruction.
-   	As a future development, we plan to exploit the \textquoteleft learning' capabilities of 
-    this paradigm, allowing the program to infer the best weight for each constraints 
-    relative to each pattern.
+Probabilistic Logic Programming (PLP, for short) reveals it self as a powerful
+framework to reason aboun uncertain systems. It inherits from Logic Programming
+the ability to write succinct and meaningful programs and powerful inference
+tools like unification, and from Probabilility Theory the ability to reason
+with uncertainty.
+Among the main techniques proposed for PLP, Logic Programs with Annotated
+Disjunctions (LPADs, for short) received a lot of attention, thanks to the
+easiness they allow to write probabilistic logic programs; in fact, for one to
+write a logic program in LPAD, it sufficies to attached probability values to
+the atom in the head of the rule.
 
+In this paper, we give an LPADs-based encoding of the fingerprint graph
+reconstruction problem; in particular, along with structure constraints that
+forbid wrong graphs, we have rules to infer the existence of an edge with
+a given probability. Notably, the probabilistic rules do \emph{not} have
+a fixed probability attached: instead, we used real-valued variables to model
+a probability function. The rationale behind this choice is that the
+probability of existence of an edge between two minutiae is really a function
+that depends for example on the distance or orientation of the minutiae. As we
+will see, this allowed us to model the problem with greater precision.
+Finally, we propose an algorithm that iteratively makes a query to our LPADs
+program and it terminates with the reconstructed graph. 
+
+
+
+\section{Background}
+\label{sec:background}
+In this section, we give some background definitions about fingerprint
+recognition and probabilistic logic programming, in particular about LPADs.
+
+\subsection{Minutiae and Fingerprint graph}
+\label{sub:backfinger}
+We refer to \cite{maltoni2009handbook} for the main definitions about
+fingerprint recognition.  Each \emph{minutia} is an informative point of the
+fingerprint, in the sense that it represents distintict features of the latter.
+It can be of two type: \emph{ending}, \ie it represents one end of a ridge, or
+\emph{bifurcation}, representing a point where a ridge splits into two other
+ridges.  Furthermore, each minutia has attached a position in the image (\ie
+coordinatates along the X and Y axis) and a direction (usually expressed in
+radians), representing 
+\begin{enumerate*}[label=\roman*)]
+  \item the direction of the corresponing ridge, in the case of an ending
+        minutia;
+  \item the direction of the bifurcation, in the case of a bifurcation minutia.
+\end{enumerate*}
+In \cref{fig:skemin}, ending minutiae are surrounded by blue circles, while
+bifurcation minutiae by green one. Moreover, the little straight line exiting
+outgoing of a circle represents the direction of the minutia. 
+
+Along with the set of minutiae, usually the database contains also the
+\emph{type} of the whole fingerprint: in \cref{fig:patterns}, the main four
+types of fingerprints are picture. This information is particularly important
+in the context of recognition, since it represents a useful background
+information.  For example, when one wondes which is the probability that two
+minutiae are linked, one can check what is the type of the fingerprint and
+which are the positions of the two minutiae and give a more accurate answer
+w.r.t. knowing also the positions the positions of the minutiae.  In fact, this
+is what we will do in our encoding.
+    
     \begin{figure}
 		\centering
-		\includegraphics[width=0.6\linewidth]{img/patterns}
-		\caption{Fingerprint patterns as they appear at a coarse level: a) \textit{left loop}, b) \textit{right loop}, c) \textit{\textit{arch}}, and d) tented arch; squares denote loop-type singular points, and triangles
-			delta-type singular points..}
+		\includegraphics[scale=0.3]{img/patterns}
+		\caption{Fingerprint patterns as they appear at a coarse level: 
+        a) \textit{left loop}, 
+        b) \textit{right loop}, 
+        c) \textit{\textit{arch}}, and 
+        d) tented arch; squares denote loop-type singular points, and triangles
+			     delta-type singular points.}
 		\label{fig:patterns}
 	\end{figure}%
+   
+\begin{figure}
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.75\linewidth]{img/skemin}
+  \captionof{figure}{The skeleton and the minutiae of a fingerprint.}
+  \label{fig:skemin}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.75\linewidth]{img/skemingraph}
+  \captionof{figure}{The ideal graph of the fingerprint in \cref{fig:skemin}}
+  \label{fig:skemingraph}
+\end{minipage}
+\end{figure}
+
+The graph we want to reconstruct is a particular type of directed
+\textit{graph} subject to a number of structure constraints on the edges: each
+node can have at most one \textit{incoming edge} and at most two
+\textit{outgoing}.  We refer to this as the \emph{fingerprint graph}.  The main
+idea behind this graph (shown in \cref{fig:skemingraph}) is that it should
+\textquoteleft emulate' the \textit{skeleton} (the black lines of
+\cref{fig:skemin}) of the fingerprint.  As reconstructing this graph could be
+somewhat trivial when in posses of the fingerprint's original image, it is not
+when the only available information are the fingerprint's minutiae.
+Unfortunately this is the case in most of the official databases where, due to
+space optimization, the fingerprints are only stored as a set of minutiae along
+with few other information.
+    
+
+
+
+\subsection{Logic Programs with Annotated Disjunctions}
+\label{sub:lpads}
+Probabilistic Logic Programming reveals its self as a powerful framework that
+combines the succincteness and powerful inference aspects of logic programming
+with the ability to reason with uncertainy typical of probability theory.
+A fundamental approach is the one Distribution Semantics
+\cite{sato1995statistical}, which defines a probability distributions over
+normal logic programs, called \emph{instances}. Furthemore, this distributions
+conservatively translates into probability distributions over the Herbrand's
+models of the cosidered program.
+
+Logic Programs with Annoted Disjunctions \cite{vennekens2004logic} are an
+example of languages following distribution semantics. They allow the user to
+annotate the atom in the head of a rule with probabilities. An LPADs consists
+of a finite set of annotated disjunctive clauses $C_i$ of the form:
+  \begin{align*}
+    h_{i1}:\Pi_{i1}; \dots ; h_{in_i}:\Pi_{in_i} \colon- b_{i1},\dots,b_{im_i}.
+  \end{align*}
+where $b_{i1},\dots,b_{im_i}$ are literals, $h_{i1},\dots,h_{in_i}$ are atoms
+and $\Pi_{i1},\dots,\Pi_{in_i}$ are real numbers in the interval $[0,1]$ such
+that $\sum_{k=1}^{n_i} \Pi_{ik} \le 1$. Note that if $n_i=1$ and $\Pi_{i1}=1$
+then $C_i$ is an Horn clause.
+If $\sum_{k=1}^{n_i} \Pi_{ik} < 1$, then we are implicity assuming that there
+exists an extra atom \emph{null} with attached probability $1-\sum_{k=1}^{n_i}
+\Pi_{ik}$. We denote with $ground(T)$ the grounding of LPAD $T$.
+
+In the next section, we will see how we can use LPADs to reconstruct the
+fingerprint graph; in particular, given an LPAD program we will make a query
+over it to infer both its truth and its probability.  As we will see, we will
+exploit informations like the type of the whole fingerprint (see
+\cref{fig:patterns}), the distance of two minutiae and direction of a minutiae
+and so on and so forth. We will see that an accurate encoding results from the
+combined use of all these considerations.
+
+
 
 
 
@@ -121,10 +228,10 @@ study about fingerprint inheritance.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Encoding
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Encoding}
-\label{sec:encoding}
-We start by describing the basic predicates introduced to model
-the problem. In order to model a minutia, we introduced the predicate
+\section{Logical Encoding}
+\label{sec:logicalencoding}
+We start by describing the basic predicates to model the problem. In order to
+model a minutia, we introduce the predicate
   \begin{center}
     \textsf{minutia(X,Y,D,T)}
   \end{center}
@@ -133,7 +240,7 @@ that the pixel with coordinates $(0,0)$ is the top left one.}
 of the minutiae inside the image along the X-axis and Y-axis, respectively;
 $\textsf{D} \in [0,2\pi]$ is the direction, expressed in radians; 
 and $T \in \{e,b\}$ is the type of the fingerprint ($e$ stands for
-\emph{ending}, $b$ for \emph{bifurcation}).
+\emph{ending}, $b$ for \emph{bifurcation}, see \cref{sub:backfinger}).
 The second predicate is
   \begin{center}
     \textsf{type\_fingerprint(T)}
@@ -142,17 +249,15 @@ where $\textsf{T}\in\{
   \textsf{tented\_archs},
   \textsf{plain\_archs},
   \textsf{left\_loop},
-  \textsf{right\_loop},
-  \textsf{whorl}
+  \textsf{right\_loop}
 \}$; 
-basically, it expresses which type the overall fingerprint belongs to
-(see~\cref{fig:patterns}).
-Finally, \textsf{max\_X(N)} and \textsf{max\_Y(N)} express the number
-of pixels of the image along the X-axis and the Y-axis, respectively.
-The \emph{knowledge base} of our program will be the set of all the 
-\textsf{minutia/4} predicates corresponding to the input file,
-the \textsf{type\_fingerprint/1} predicate and the \textsf{max\_X/1}
-and \textsf{max\_Y/1} predicates. For example:
+basically, it expresses which type the overall fingerprint belongs to (see
+\cref{fig:patterns}).  Finally, \textsf{max\_X(N)} and \textsf{max\_Y(N)}
+express the number of pixels of the image along the X-axis and the Y-axis,
+respectively.  The \emph{knowledge base} of our program is a set of ground
+facts, more specifically: a set of \textsf{minutia/4} facts, one single
+\textsf{type\_fingerprint/1} fact, one \textsf{max\_X/1} and one
+\textsf{max\_Y/1} fact. For example:
   \begin{center}
   \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
 max_Y(450).
@@ -167,18 +272,38 @@ minutia(94,104,0.09966865249116204,b).
 minutia(62,272,5.135242906517631,b).
   \end{lstlisting}
   \end{center}
-Since what we want to retrieve are the edges between the minutiae along
-with their probability of existence, we introduced the predicate
+Since the set of minutiae are normally represented in the database in XML
+format, we wrote script to translate from XML to Prolog-like format.
+
+Since what we want to infer are the existence of the edges between the minutiae
+along with their probability of existence, we introduce the predicate
   \begin{center}
     \textsf{edge($X_1,Y_1,X_2,Y_2$)}
   \end{center}
-where $(X_1,Y_1)$ are the coordinates of one end and $(X_2,Y_2)$
-the coordinate of the other end.
+where $(X_1,Y_1)$ are the coordinates of one minutia and $(X_2,Y_2)$ the
+coordinate of the other minutia.
 Since in our setting we want undirected edges (their direction does not
-matter), some simmetry breaking constraints can be added to the 
-encoding, aiming at removing specular but equivalent solutions; in
-particular, we constrained that there must exists only left-to-right
-edges.
+matter), some simmetry breaking constraints can be added to the encoding,
+aiming at removing specular but equivalent solutions; in particular, we
+constrained that there must exist only left-to-right edges with the following
+constraint, which we will use as a precondition for (\ie appearing in the body
+of) every rule to infer an edge:
+  \begin{center}
+  \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
+good_edge(X1,Y1,X2,Y2) :-
+   minutia(X1,Y1,_,_),
+   minutia(X2,Y2,_,_),
+   X1<X2.
+good_edge(X1,Y1,X2,Y2) :-
+   minutia(X1,Y1,_,_),
+   minutia(X2,Y2,_,_),
+   X1=X2,Y1<Y2. 
+  \end{lstlisting}
+  \end{center}
+
+
+
+
 
 \subsection{Structure constraints}\label{sub:structure_cons}
 We introduce two structure constraints to forbid wrong edges
@@ -198,77 +323,99 @@ b_inc_edge :-  aggregate_all(count, edge(X,Y,X1,Y1), Count1),
   \item
     similarly, each E-minutia has exactly $2$ incident edges.
 \end{itemize}
-With the rule \texttt{valid\_graph :- b\_inc\_edge, e\_inc\_edge} we impose
-these two structure constraints.
+With the rules 
+  \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
+    valid_graph :- b_inc_edge, e_inc_edge.
+    valid_graph.
+  \end{lstlisting}
+we impose these two structure constraints.
 
-\section{Probability constraints}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Probabilistic Encoding}
+\label{sec:probenc}
+In this section, we will give the probabilistic rule to infer the existence of
+an edge along with its probability. The rules are divided depending by which
+type of fingerprint (see \cref{fig:patterns}) they refer to; we describe first
+the rules for \emph{tented} and \emph{plain archs}, since the cases for the
+remaining type will reuse these rules.
+
+One important thing to note is that the probabilistic rule we are going to
+describe have \emph{not} a fixed probability attached to the atoms in the head
+of the rules. Instead, we attache real-valued variables: this allows us to give
+different probability values to an atom depending by how the \emph{unification}
+process occurs. By the modelling side, this permits a greater precision and
+flexibility: instead of having a fixed probability and being tailored for only
+one particular database of fingerprints' images, our rules are independent from
+the particular test set used and do \emph{not} require the user to manually fix
+the probabilities.
+
+
+
 \subsection{Tented and Plain Archs}
-%\paragraph{Contraint POS1}:
-%Given two E-minutiae belonging to a tented arch fingerprint, we note that 
-%the probability of existence of an edge between these two minutiae 
-%is high if they have opposite directions and low if the have 
-%the same direction.
-%Let $M_1=(X_1,Y_1,D_1,e)$ and $M_2=(X_2,Y_2,D_2,e)$ be two E-minutiae.
-%Let 
-%  \begin{align*}
-%    \weight_d(M_1,M_2) \coloneqq 
-%    \frac{
-%      \left( \pi - \Big\lvert \lvert D_1-D_2 \rvert - 
-%      \pi \rvert\Big\rvert \right)}{\pi}
-%  \end{align*} 
-%The more $\lvert D_1-D_2 \rvert$ is close to $\pi$ (resp. $0$), the more 
-%$weight_d(M_1,M_2)$ is close to $1$ (resp. $0$).
-%With Constraint TA1, we give the value $weight_d(M_1,M_2)$ to the probability 
-%of existence of an edge between $M_1$ and $M_2$.
-%
-%\paragraph{Contraint POS2}:
-%Given two B-minutiae belonging to a tented arch fingerprint, the more
-%these two minutiae are distant (either in the x-axis or in the y-axis)
-%the less an edge between them is likely to exists.
-%
-%Let $M_1=(X_1,Y_1,D_1,b)$ and $M_2=(X_2,Y_2,D_2,b)$ be two B-minutiae.
-%Let $max_x$ and $max_y$ be the maximum value for the x-coordinate and
-%y-coordinate, respectively. We define:
-%  \begin{align*}
-%    \weight_x(M_1,M_2) \coloneqq
-%    \frac{\lvert X_1 - X_2 \rvert}{max_x}
-%  \end{align*}
-%  \begin{align*}
-%    \weight_y(M_1,M_2) \coloneqq
-%    \frac{\lvert Y_1 - Y_2 \rvert}{max_y}
-%  \end{align*}
-%We give the value $\weight_x$ and $\weight_y$ to the probability 
-%of existence of an edge between $M_1$ and $M_2$.
-In this part, we describe probability rules for the tented and plain archs 
-fingerprints: you can refer to fig. 3c, fig. 3d or to~\cref{fig:arch} as examples.
+Here we describe probability rules for the tented and plain archs fingerprints:
+you can refer to \cref{fig:arch} as an example.
 
-\paragraph{Constraint POS}
-In this paragraph, we give a constraint for the edges inside a tented
-or plaing arch fingerprint that link the \emph{direction} of the two
-minutiae with the probability of existence of an edge between them.
-Given two minutiae $M_1$ and $M_2$ (of any kind) beloning to a tented 
-or plain arch fingerprint,
-we note that the probability of existence of an edge between these two
-respects this rule: the more the directions of both the minutiae
-is close to the straight line connecting $M_1$ and $M_2$ the more the
-probability is high (the red lines in~\cref{fig:arch}).
-Let $M_1=(X_1,Y_1,D_1,\_)$ and $M_2=(X_2,Y_2,D_2,\_)$ be two minutiae.
-Let $\alpha_1=\arctantwo(Y1-Y2,X1-X2)$ and $\alpha_2=\arctantwo(Y2-Y1,X2-X1)$:
-$\alpha_1$ (resp. $\alpha_2$) measures the value of the angle (in randians) between 
-the direction of $M_1$ (resp. $M_2$) and the straight line between $M_1$ and
-$M_2$.
-We define:
-  \begin{align*}
-    \weight_{POS} \coloneqq
+\paragraph{Direction Constraint}
+In this paragraph, we give a constraint for the edges inside a tented or plain
+arch fingerprint that link the \emph{direction} of the two minutiae with the
+probability of existence of an edge between them.  Given two minutiae $M_1$ and
+$M_2$ (of any kind) belonging to a tented or plain arch fingerprint, we note
+that the probability of existence of an edge between these two respects this
+rule: the more the directions of both the minutiae is close to the straight
+line connecting $M_1$ and $M_2$ the more the probability is high.  For example,
+in \cref{fig:arch} at the two extremes of the red line there are (at least) two
+minutiae such that their direction if very close to the straight line
+connecting them.  Let $M_1=(X_1,Y_1,D_1,\_)$ and $M_2=(X_2,Y_2,D_2,\_)$ be two
+minutiae.  Let $\alpha_1=\arctantwo(Y1-Y2,X1-X2)$ and
+$\alpha_2=\arctantwo(Y2-Y1,X2-X1)$: $\alpha_1$ (resp. $\alpha_2$) measures the
+value of the angle (in randians) between the direction of $M_1$ (resp. $M_2$)
+and the straight line between $M_1$ and $M_2$.  We define\footnote{Note that we
+divide by $2\pi$ in order to normalize the value on the numerator and to make
+it a correct probability value.}:
+  \begin{align}\label{eq:distcons}
+    \weight_{DIS} \coloneqq
     W \cdot (1-\frac{\lvert D1-\alpha_1\rvert+\lvert D2-\alpha_2\rvert}{2\pi})
-  \end{align*}
-where in the case of tented archs $W=1$: in the following we will explain the
-meaning of variable $W$.
-With Constraint POS, we give the value $weight_{POS}(M_1,M_2)$ to the probability 
-of existence of an edge between $M_1$ and $M_2$.
+  \end{align}
+where in the case of tented archs $W=1$; in the following we will explain the
+meaning of variable $W$: intuitively $W$ will represent the importance of this
+rule for the fingerprint type under consideration; since we are dealing with
+tented and plain archs and we want this rule to be important as the other ones,
+we give it importance $W=1$. With this Distance Constraint, we give the value
+$weight_{DIS}(M_1,M_2)$ to the probability of existence of an edge between
+$M_1$ and $M_2$. Overall, we obtain the following LPAD's rule:
+  \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
+edge(X1,Y1,X2,Y2): Weight :-
+                 minutia(X1,Y1,D1,_),
+                 minutia(X2,Y2,D2,_),
+                 good_edge(X1,Y1,X2,Y2),
+                 Alpha1 is float(atan2(Y1-Y2,X1-X2)),
+                 Alpha2 is float(atan2(Y2-Y1,X2-X1)),
+                 Diff1 is float(abs(D1-Alpha1)),
+                 Diff2 is float(abs(D2-Alpha2)),
+                 weight_rule(W,Y1,Y2),
+                 Weight is float(W*(1 -rdiv((Diff1+Diff2),(2*pi)))). 
+  \end{lstlisting}
+where the last line computes exactly \cref{eq:distcons}. In the following, when
+writing the formula for a particular \texttt{weight}, we always assume that the
+corresponding variable $Weight$ is attached to the atom \texttt{edge} in the
+head of the rule.
+
+
 
 \paragraph{Distance Constraints}
-In this paragraph, we give a total of three constraints for edges inside
+Here we give a total of three constraints for edges inside
 a tented or plain archs fingerprint that take into consideration the
 \emph{distance} between two minutiae.
 Let $M_1=(X_1,Y_1,D_1,\_)$ and $M_2=(X_2,Y_2,D_2,\_)$ be two minutiae.
@@ -280,6 +427,11 @@ Let $M_1=(X_1,Y_1,D_1,\_)$ and $M_2=(X_2,Y_2,D_2,\_)$ be two minutiae.
             \begin{align*}
               \weight_{DA1} \coloneqq 1-\frac{\lvert Y1-Y2\rvert}{max\_Y}
             \end{align*}
+          Note that the division by $max\_Y$ is necessary in order to
+          normalize the value $\lvert Y1-Y2\rvert$ and make it a correct
+          probability value. Intuitively, this rule says that the more two
+          minutiae have the same height inside the image, the more an edge
+          connecting them is likely to exist.
     \item \textbf{DIST\_ARCH\_2}: the same as the previous point, but with
           the X-axis;
     \item \textbf{DIST\_ARCH\_3}: the more the X-coordinate of the midpoint of 
@@ -294,59 +446,55 @@ Let $M_1=(X_1,Y_1,D_1,\_)$ and $M_2=(X_2,Y_2,D_2,\_)$ be two minutiae.
               \frac{\lvert \frac{\lvert X1-X2 \rvert}{2} - \frac{max\_X}{2}
               \rvert}{max\_X}
             \end{align*}
+          where $\frac{\lvert X1-X2 \rvert}{2}$ is the X-coordinate of the
+          midpoint of the line between $M_1$ and $M_2$ and $\frac{max\_X}{2}$
+          is the midpoint of the image; again, we normalize with the division
+          by $max\_X$. Therefore, the more the difference on the numerator is
+          low, the more the resulting probability is high.
   \end{itemize}
 
 
+
+
+
+
 \subsection{Left and Right Loop}
-%Non dividiamo in 4 quadranti, ma piuttosto diamo un peso a tutte le
-%regole, cioè sia a quelle standard dei plain archs (due quadranti superiori)
-%sia a quelle specifiche per i left/right loops (due quadranti inferiori).
-%
-%I pesi per le probabilità sono opposti per i due tipi di regole, a seconda
-%che si avvicinino o meno alla parte bassa o alta dell'immagine. L'idea è
-%questa:
-%  \begin{itemize}
-%    \item
-%      piu mi avvicino alla parte bassa dell'immagine e piu do peso alle
-%      regole per i left/right loops. Faccio questo \emph{moltiplicando}
-%      la probabilita dell'arco per il valore:
-%        \begin{align*}
-%          1 - Y_1 \cdot Y_2
-%        \end{align*}
-%    \item
-%      similmente, piu mi avvicino alla parte alta dell'immagine e piu 
-%      do peso alle regole per i plain archs.
-%  \end{itemize}
 In this part, we describe the probability rules for the left and right loop
-fingerprints: you can refer to fig. 3a, fig. 3b or to~\cref{fig:loop} as examples.
-Since, in their upper region, left and right loop fingerprints exhibit a behavior similar
-to that of tented and plain archs fingerprints, we decided to use the
-contraints we described above in these cases as well. In particular, we
-note that in the upper region, the behavior of a left or right fingerprint is
-very similar to that of a plain of tented arch. For this reason, we
-parameterized \emph{Constraint POS} with the variable $W$:
+fingerprints.  Since, in their upper region, left and right loop fingerprints
+exhibit a behavior similar to that of tented and plain archs fingerprints (see
+\cref{fig:loop} for an example), we decided to use the contraints we described
+above in these cases as well. In particular, we note that in the upper region,
+the behavior of a left or right fingerprint is very similar to that of a plain
+of tented arch. For this reason, we parameterized \emph{Distance Constraint}
+with the variable $W$:
   \begin{itemize}
     \item
       if we have a tented or plain archs fingerprint, then $W$ is $1$, meaning
-      that the rule has the same weight for all the points in the image;
+      that the rule has the same weight (or \emph{importance}) for all the
+      points in the image;
     \item
       otherwise, in the case of left or right loop fingerprint, $W$ is
       computed by the predicate $weight\_rule(W,Y1,Y2)$, which assigns 
       $W$ the value:
         \begin{align*}
           W \coloneqq 
-          \lvert 1-\frac{Y1}{max_Y} \rvert 
+          \Big\lvert 1-\frac{Y1}{max_Y} \Big\rvert 
           \cdot 
-          \lvert 1-\frac{Y2}{max_Y} \rvert
+          \Big\lvert 1-\frac{Y2}{max_Y} \Big\rvert
         \end{align*}
-      Therefore, the closer the two points are to the upper region of a
-      left or right loop fingerprint, the more we give weight to \emph{Constraint POS}.
+      Therefore, the closer the two points are to the upper region of a left or
+      right loop fingerprint, the more the value of $W$ is high and in turn the
+      more we give weight to \emph{Distance Constraint}.
   \end{itemize}
 
+
+In the following, we give probabilistic rules tailores for left-loop and
+right-loop typed fingerprints.
 \paragraph{Constraint LOOP}
 Given a left or right loop fingerprint, we noted that the ending-type
 minutiae located in the \emph{lower region} of the image are clustered along
-a vertical line as shown in Figure~\cref{fig:loop}.  
+\todo{Show the vertical line in the image.} 
+a vertical line as shown in \cref{fig:loop}.
 This behavior is captured by \emph{Constraint LOOP}, which gives to
 the edge between two minutiae $M_1$ and $M_2$ belonging to a left or right loop
 the probability $\weight_{LOOP}$, where:
@@ -355,22 +503,28 @@ the probability $\weight_{LOOP}$, where:
     (1-W)\cdot 
     (1-\frac{\lvert X1-X2 \rvert}{max\_X})
   \end{align*}
-Again, $(1-W)$ models the fact that the more the two minutiae are lower in 
-the image, the more weight we want to give to the rule.  
+In words, the more $\lvert X1-X2 \rvert$ is low, the more the two points
+``form" a vertical line and in turn the more $(1-\frac{\lvert X1-X2
+\rvert}{max\_X})$ is high.  Again, $(1-W)$ models the fact that the more the
+two minutiae are lower in the image, the more weight we want to give to the
+rule.  
 
 
 
 \paragraph{Constraints LL and LR}
 Along the above-mentioned line on which the minutiae of a left or right loop
-fingerprint are located, we indentified another constraint: minutiae have to
-be \emph{balanced} along this line, in a very similar way we did for
-\emph{DIST\_ARCH\_3}. In other words, the more the midpoint of the straight line 
-between two minutiae is closer to the \emph{third quartile}\footnote{For third
+fingerprint are located, we identified another two constraints, that we call
+\texttt{LL} (short for \texttt{L}eft \texttt{L}oop) and \texttt{RL} (short for
+\texttt{R}ight \texttt{L}oop): minutiae have to be \emph{balanced} along the
+vertical line of \cref{fig:loop}, in a very similar way we did for
+\emph{DIST\_ARCH\_3}. In other words, the more the midpoint of the straight
+\todo{Add something to the denote the third quartile in the image} line between
+two minutiae is closer to the \emph{third quartile}\footnote{For third
 quartile, we wean the set of points $(X,Y)$ such that $Y=\frac{3}{4}\cdot
 max\_Y$} of the image, the more an edge between them is likely.
 
-Overall, the probability given by \emph{Constraint LL} to the existence of
-an edge is $\weight_{LL}$, where:
+Overall, the probability given by \emph{Constraint LL} to the existence of an
+edge is $\weight_{LL}$, where:
   \begin{itemize}
     \item
       $\weight_{LL}^\prime \coloneqq 
@@ -381,14 +535,13 @@ an edge is $\weight_{LL}$, where:
         \frac{\lvert \frac{\lvert Y1-Y2 \rvert}{2} - \frac{3}{4}\cdot max\_Y
         \rvert}{max\_Y})$
   \end{itemize}
-Recall that the more $(1-W)$ is high, the more we are in the lower region
-of the image. In the same way, the more we are in the bottom left region of the
-image, the more $\weight_{LL}^\prime$ is high. 
-Finally, with $\weight_{LL}$ we are saying that the more the points are 
-\emph{balanced} w.r.t. the third quartile, the more an edge between them
-is likely to exist.
+Recall that the more $(1-W)$ is high, the more we are in the lower region of
+the image. In the same way, the more $\weight_{LL}^\prime$ is high, the more we
+are in the bottom left region of the image.  To sum up, with $\weight_{LL}$ we
+are saying that the more the points are \emph{balanced} w.r.t. the third
+quartile, the more an edge between them is likely to exist.
 
-\emph{Constrain RL} does the same expect that $\weight_{RL}^\prime$ is
+\emph{Constrain RL} does the same except that $\weight_{RL}^\prime$ is
 defined as follows:
   \begin{align*}
     \weight_{RL}^\prime \coloneqq 
@@ -407,16 +560,34 @@ in order to give more weight to the points in the bottom right region.
 \begin{subfigure}{.48\textwidth}
 	\centering
 	\includegraphics[width=0.86\linewidth]{img/loop}
-	\caption{Skeleton of an \textit{left-loop} type. In blue the quadrant that encapsulates the loop while in red and green the parts captured by the arch constraints.}
+	\caption{Skeleton of a \textit{left-loop} type. In blue the quadrant that encapsulates the loop while in red and green the parts captured by the arch constraints.}
 	\label{fig:loop}
 \end{subfigure}%
 \caption{Example of the properties captured by our constraints.}
 \label{fig:example}
 \end{figure}
 
-\section{Computation of the graph}
-\label{sec:computation_graph}
-With the query 
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% GENERATION OF THE FINGERPRINT GRAPH
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Generation of the fingerprint graph}
+\label{sec:graphgen}
+We used \texttt{cplint} \cite{alberti2017cplint} both as the editor with which
+to write the LPAD and as the main engine to solve all the queries that we are
+going to describe \footnote{You can find the implementation of the encoding at
+\url{https://github.com/lucageatti/PLP-fingerprints} or inside the
+\texttt{fingerprints.pl} script under the \texttt{code} folder of this
+package.}.  With the query 
   \begin{center}
   \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
 findall([X1,Y1,X2,Y2,P],prob(edge(X1,Y1,X2,Y2),P),Results).
@@ -445,9 +616,25 @@ of the unification. Thus, we propose the following procedure:
     \item
       from the result of the \texttt{findall} query, take the tuple
       \texttt{[X1,Y1,X2,Y2,P]} with the highest probability \texttt{P};
+      we used the script \emph{getmax.py}, that you can find under the
+      \texttt{code} folder;
     \item
-      add the corresponing edge to the knowledge base, \ie
-      add \texttt{edge(X1,Y1,X2,Y2)} to the program;
+      add the corresponding edge to the knowledge base, \ie add
+      \texttt{edge(X1,Y1,X2,Y2)} to the program; therefore, in general the
+      resulting the LPAD program contains many \texttt{edge/4} ground facts,
+      \eg:
+  \begin{center}
+  \begin{lstlisting}[language=Prolog,frame = single,basicstyle=\footnotesize\ttfamily]
+edge(162, 352, 162, 388).
+edge(91, 320, 180, 319).
+edge(115, 386, 162, 388).
+edge(89, 318, 180, 319).
+...
+edge(108, 344, 162, 388).
+edge(50, 335, 180, 319).
+  \end{lstlisting}
+  \end{center}
+
     \item
       execute again the \texttt{findall} query
       \begin{enumerate}
@@ -456,35 +643,42 @@ of the unification. Thus, we propose the following procedure:
           added violates some structure constraints (see
           \cref{sub:structure_cons}); thus, we delete it from the knowledge
           base and from the result of the latest \texttt{findall} query, and we
-          go back to Point 1; 
+          go back to point 1; 
         \item
           otherwise, we can just go back to Point 1 and reiterate the process.
       \end{enumerate}
   \end{enumerate}
-\paragraph{Termination condition:} once all the edges inside
-the latest \texttt{findall}'s list are no-good, \ie once this list becomes empty,
-then we stop the algorithm: the knowledge base contains the graph for the
-fingerprint.
+\emph{Termination condition:} once all the edges inside the latest
+\texttt{findall}'s list are no-good, \ie once this list becomes empty, then we
+stop the algorithm: the knowledge base contains the (most common) fingerprint
+graph. This is exactly the solution to out starting problem, \ie the
+fingerprint graph reconstruction problem.
 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% CONCLUSIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
-During this work we studied and tackled the problem of reconstructing the skeleton 
-of a fingerprint using only the available information on the official databases, 
-\ie the \emph{minutiae}.
-As already said we are exploiting probabilistic logic programming to reconstruct the 
-\textquotedblleft most probable skeleton".
-Thanks to our script (the file named \textquotedblleft \textit{fingerprints.pl}") it 
-is possible to extract the list of edges with relative probability. 
-Then with the procedure described in \cref{sec:computation_graph},
-it is possible to retrieve the whole graph.
-%: at every iteration we add the most probable edge found at the previous 
-%iteration to the \textquotedblleft bad\_edges" so we can find the new most probable edge.
+During this work we studied and tackled the problem of reconstructing the graph
+(or \emph{skeleton}) of a fingerprint using only the available information on
+the official databases, \ie the \emph{minutiae}.  We exploited Probabilistic
+Logic Programming to reconstruct the \textquotedblleft most probable graph".
+Thanks to our LPAD encoding, it is possible to extract the list of edges with
+their relative probability.  Then with the procedure described in
+\cref{sec:graphgen}, it is possible to retrieve the whole graph.
 
-As we can see in~\cref{fig:concl} the graph generated through our tool is somewhat similar 
-to the one that has been extrapolated from the binary image itself.
-An important factor to keep in mind is that the image obtained by out \textit{P.L.P.} procedure~\cref{fig:concl-plp}, even if it differs from the original one~\cref{fig:concl-c}, follows accurately what we formalized.
-This means that the \textit{P.L.P.} script needs only refinements in the constraints to produce results that can be representative of real fingerprint.
-That is why, even if the two graphs obviously differ, the results are promising and this tool is certainly 
-to keep in mind for future studies on inheritance on fingerprints.
+As we can see in \cref{fig:concl} the graph generated by means of our tool is
+somewhat similar to the one that has been extrapolated from the binary image
+itself.  An important factor to keep in mind is that the image obtained by our
+procedure (see \cref{fig:concl-plp}), even if it differs from the original one
+\cref{fig:concl-c}, follows accurately what we formalized.  This means that the
+\textit{LPAD} script needs only refinements in the constraints to produce
+results that can be representative of real fingerprint.  That is why, even if
+the two graphs obviously differ, the results are promising and this tool is
+certainly to keep in mind for future studies on fingerprints recognition.
 
 \begin{figure}
 	\centering
@@ -506,20 +700,22 @@ to keep in mind for future studies on inheritance on fingerprints.
 \end{figure}
 
 As future works we plan to:
-\begin{itemize}
-	\item Increase the precision of our tool by introducing more constraints for each 
-        type of fingerprint.
-  \item Automatize the iterative procedure described in
-        \cref{sec:computation_graph} to permit an easier use of the tool.
-        This is an easy step, which has not been included in this report due
-        to technical issue about the installation of CPLINT in a local machine.
-	\item As we have a large set of fingerprints images ($\approx 3\ 000$) we think that 
+\begin{enumerate*}[label=\roman*)]
+  \item increase the precision of our tool by tuning the equations we described
+        or even by introducing more constraints for each type of fingerprint;
+  \item automatize the iterative procedure described in
+        \cref{sec:graphgen} to permit an easier use of the tool.  This is an
+        easy step, which has not been included in this report due to technical
+        issue about the installation of \texttt{cplint} in a local machine;
+	\item as we have a large set of fingerprints images ($\approx 3\ 000$) we think that 
         exploiting the learning component of \textit{cplint} could bring really promising results.
-\end{itemize}
+\end{enumerate*}
 
 
 
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% BIBLIO
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliography{biblio}
+\bibliographystyle{ieeetr}
 \end{document}
