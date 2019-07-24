@@ -34,24 +34,24 @@
 \begin{document}
 \maketitle
 \paragraph{Abstract}
-Fingerprint recognition is a problem of fundamental importance nowadays\cite{maltoni2009handbook}.
+Fingerprint recognition is a problem of fundamental importance nowadays.
 Commonly, fingerprints are represented in databases as a set of
 \emph{minutiae}, \ie points in the 2D space of an image with a direction and
 a type attached. A fundamental problem is to reconstruct from this set of
-points a graph representing the original fingerprint
-\cite{isenor1986fingerprint}.  Probabilistic logic programming (PLP, for short)
-reveals it self as a powerful framework to reason about domains characterized
-by uncertainty. Among the main techniques, LPADs \cite{vennekens2004logic}
-pheraps are the most general, allowing one to annotate each atom in the head of
-a rule with a probability.  In this paper, we give an encoding of the
+points a graph representing the original fingerprint.  Probabilistic Logic Programming (PLP, for short)
+reveals itself as a powerful framework to reason about domains characterized
+by uncertainty. Among the main techniques, LPADs
+perhaps are the most general, allowing one to annotate each atom in the head of
+a rule with probability.  In this paper, we give an encoding of the
 fingerprint graph reconstruction using PLP; in particular, we give a set of
 rules which define the probability of existence of an edge and a set of
-structure constraints to forbid wrong graphs. Notably, the probability attached
-to each of the rules are not fixed \apriori: instead, the rules are
-parametric, in that their probabilities are real-values variables; this allowed
-us to model with greater precision the problem under consideration.  In end, we
-propose an iterative algorithm to compute effectively the fingerprint graph. 
-
+structure constraints to forbid graph structures that are not possible.
+Notably, the probability attached
+to each rule is not fixed \apriori: instead, the rules are
+parametric, that is their probabilities are real-values variables. This allowed
+us to model with greater precision the we are considering.  In the end we
+propose an iterative algorithm to compute effectively the fingerprint graph from 
+the minutiae information.\\~\\
 \emph{This is a report for the PhD course exam on Probabilistic Logic Programming, 
 held at University of Udine in the academic year 2018-2019 by Elena Bellodi.}
 
@@ -61,17 +61,18 @@ held at University of Udine in the academic year 2018-2019 by Elena Bellodi.}
 \section{Introduction}
 Modern \textit{biometrics}-based tools exploit the fact that biometric
 characteristics, used for the verification of an individual’s identity, are
-unique from person to person.  This is why the majority of the studies in this
+unique from person to person\cite{maltoni2009handbook}.  This is why the
+majority of the studies in this
 field aim to generate biometric tools that are able to distinguish even twins
 \cite{jain2001twin,jain2002similarity}.
 %
 The purpose of the above-mentioned studies is to identify the uniqueness of each
 \textit{fingerprint}, facial feature or any others biometric characteristics of
-a person. Fingerprints in particular play a central role, in that they
-represent the most used biometric characteristics. A fingerprint's image is not
+a person. Fingerprints in particular play a central role, as they are
+ the most used biometric characteristics. A fingerprint's image is not
 stored in the database, commonly due to space issues; instead, only a set of
 point of the original image, called \emph{minutiae}, is stored.
-
+\todo[inline]{from here}
 In this paper, we focus on fingerprint recognition, that is the problem of
 checking whether two fingerprints images really represent the same fingerprint.
 %
@@ -81,16 +82,16 @@ of two fingerprints \cite{isenor1986fingerprint}. Therefore, a key problem is
 to reconstruct from a set of minutiae the most likely graph, which is the main
 problem we tackle in this paper. We refer to this as the \emph{fingerprint
 graph reconstruction problem}.
-
-Probabilistic Logic Programming (PLP, for short) reveals it self as a powerful
-framework to reason aboun uncertain systems. It inherits from Logic Programming
-the ability to write succinct and meaningful programs and powerful inference
-tools like unification, and from Probabilility Theory the ability to reason
+\todo[inline]{to here}
+Probabilistic Logic Programming (PLP, for short) reveals itself as a powerful
+framework to reason about uncertain systems. It inherits from Logic Programming
+the ability to write succinct yet meaningful programs, powerful inference
+tools like unification, and ,from Probability Theory, the ability to reason
 with uncertainty.
 Among the main techniques proposed for PLP, Logic Programs with Annotated
 Disjunctions (LPADs, for short) received a lot of attention, thanks to the
 easiness they allow to write probabilistic logic programs; in fact, for one to
-write a logic program in LPAD, it sufficies to attached probability values to
+write a logic program in LPAD, it suffices to attach probability values to
 the atom in the head of the rule.
 
 In this paper, we give an LPADs-based encoding of the fingerprint graph
@@ -100,7 +101,8 @@ a given probability. Notably, the probabilistic rules do \emph{not} have
 a fixed probability attached: instead, we used real-valued variables to model
 a probability function. The rationale behind this choice is that the
 probability of existence of an edge between two minutiae is really a function
-that depends for example on the distance or orientation of the minutiae. As we
+that depends, for example, on the \emph{distance} or \emph{orientation} of the minutiae themselves.
+As we
 will see, this allowed us to model the problem with greater precision.
 Finally, we propose an algorithm that iteratively makes a query to our LPADs
 program and it terminates with the reconstructed graph. 
@@ -116,11 +118,11 @@ recognition and probabilistic logic programming, in particular about LPADs.
 \label{sub:backfinger}
 We refer to \cite{maltoni2009handbook} for the main definitions about
 fingerprint recognition.  Each \emph{minutia} is an informative point of the
-fingerprint, in the sense that it represents distintict features of the latter.
+fingerprint, in the sense that it represents distinct features of the latter.
 It can be of two type: \emph{ending}, \ie it represents one end of a ridge, or
 \emph{bifurcation}, representing a point where a ridge splits into two other
 ridges.  Furthermore, each minutia has attached a position in the image (\ie
-coordinatates along the X and Y axis) and a direction (usually expressed in
+coordinates along the X and Y axis) and a direction (usually expressed in
 radians), representing 
 \begin{enumerate*}[label=\roman*)]
   \item the direction of the corresponing ridge, in the case of an ending
@@ -128,18 +130,19 @@ radians), representing
   \item the direction of the bifurcation, in the case of a bifurcation minutia.
 \end{enumerate*}
 In \cref{fig:skemin}, ending minutiae are surrounded by blue circles, while
-bifurcation minutiae by green one. Moreover, the little straight line exiting
+bifurcation minutiae by green one. Moreover, the short straight line exiting
 outgoing of a circle represents the direction of the minutia. 
 
 Along with the set of minutiae, usually the database contains also the
-\emph{type} of the whole fingerprint: in \cref{fig:patterns}, the main four
-types of fingerprints are picture. This information is particularly important
-in the context of recognition, since it represents a useful background
-information.  For example, when one wondes which is the probability that two
-minutiae are linked, one can check what is the type of the fingerprint and
-which are the positions of the two minutiae and give a more accurate answer
-w.r.t. knowing also the positions the positions of the minutiae.  In fact, this
-is what we will do in our encoding.
+\emph{type} of the whole fingerprint: in \cref{fig:patterns}, four
+types of fingerprints are pictured, \ie the ones we have considered in our study. This information is particularly important
+in the context of recognition, since it represents useful background
+information.  For example, to determine the probability that two
+minutiae are linked is possible to check the fingerprint type and
+the position of the two minutiae to give a more accurate answer
+compared to the one that would be given only knowing the position of the minutiae.
+Therefore, in our encoding, we will exploits both the minutiae information and
+the fingerprint type. 
     
     \begin{figure}
 		\centering
@@ -154,29 +157,30 @@ is what we will do in our encoding.
 	\end{figure}%
    
 \begin{figure}
-\centering
-\begin{minipage}{.5\textwidth}
-  \centering
-  \includegraphics[width=.75\linewidth]{img/skemin}
-  \captionof{figure}{The skeleton and the minutiae of a fingerprint.}
-  \label{fig:skemin}
-\end{minipage}%
-\begin{minipage}{.5\textwidth}
-  \centering
-  \includegraphics[width=.75\linewidth]{img/skemingraph}
-  \captionof{figure}{The ideal graph of the fingerprint in \cref{fig:skemin}}
-  \label{fig:skemingraph}
-\end{minipage}
+	\centering
+	\begin{subfigure}{.48\textwidth}
+	\centering
+	\includegraphics[width=.75\linewidth]{img/skemin}
+	\caption{The skeleton and the minutiae of a fingerprint.}
+	\label{fig:skemin}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.48\textwidth}
+	  \centering
+	\includegraphics[width=.75\linewidth]{img/skemingraph}
+	\caption{The ideal graph of the fingerprint in \cref{fig:skemin}}
+	\label{fig:skemingraph}
+	\end{subfigure}%
 \end{figure}
 
 The graph we want to reconstruct is a particular type of directed
-\textit{graph} subject to a number of structure constraints on the edges: each
+\textit{graph} subjected to several structure constraints on the edges; \eg each
 node can have at most one \textit{incoming edge} and at most two
 \textit{outgoing}.  We refer to this as the \emph{fingerprint graph}.  The main
 idea behind this graph (shown in \cref{fig:skemingraph}) is that it should
 \textquoteleft emulate' the \textit{skeleton} (the black lines of
 \cref{fig:skemin}) of the fingerprint.  As reconstructing this graph could be
-somewhat trivial when in posses of the fingerprint's original image, it is not
+somewhat trivial when in possession of the fingerprint's original image, it is not
 when the only available information are the fingerprint's minutiae.
 Unfortunately this is the case in most of the official databases where, due to
 space optimization, the fingerprints are only stored as a set of minutiae along
@@ -187,7 +191,7 @@ with few other information.
 
 \subsection{Logic Programs with Annotated Disjunctions}
 \label{sub:lpads}
-Probabilistic Logic Programming reveals its self as a powerful framework that
+Probabilistic Logic Programming reveals itself as a powerful framework that
 combines the succincteness and powerful inference aspects of logic programming
 with the ability to reason with uncertainy typical of probability theory.
 A fundamental approach is the one Distribution Semantics
