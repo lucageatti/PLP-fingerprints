@@ -38,22 +38,22 @@ Fingerprint recognition is a problem of fundamental importance nowadays.
 Commonly, fingerprints are represented in databases as a set of
 \emph{minutiae}, \ie points in the 2D space of an image with a direction and
 a type attached. A fundamental problem is to reconstruct from this set of
-points a graph representing the original fingerprint.  Probabilistic Logic Programming (PLP, for short)
-reveals itself as a powerful framework to reason about domains characterized
-by uncertainty. Among the main techniques, LPADs
+points a graph representing the original fingerprint.  Probabilistic Logic
+Programming (PLP, for short) reveals itself as a powerful framework to reason
+about domains characterized by uncertainty. Among the main techniques, LPADs
 perhaps are the most general, allowing one to annotate each atom in the head of
-a rule with probability.  In this paper, we give an encoding of the
-fingerprint graph reconstruction using PLP; in particular, we give a set of
-rules which define the probability of existence of an edge and a set of
-structure constraints to forbid graph structures that are not possible.
-Notably, the probability attached
-to each rule is not fixed \apriori: instead, the rules are
-parametric, that is their probabilities are real-values variables. This allowed
-us to model with greater precision the we are considering.  In the end we
-propose an iterative algorithm to compute effectively the fingerprint graph from 
-the minutiae information.\\~\\
-\emph{This is a report for the PhD course exam on Probabilistic Logic Programming, 
-held at University of Udine in the academic year 2018-2019 by Elena Bellodi.}
+a rule with probability.  In this paper, we give an encoding of the fingerprint
+graph reconstruction using PLP; in particular, we give a set of rules which
+define the probability of existence of an edge and a set of structure
+constraints to forbid graph structures that are not possible.  Notably, the
+probability attached to each rule is not fixed \apriori: instead, the rules are
+parametric, that is their probabilities are real-valued variables. This allowed
+us to model with greater precision the domain we are considering.  In the end
+we propose an iterative algorithm to compute effectively the fingerprint graph
+from the minutiae information.\\~\\
+\emph{This is a report for the PhD course exam on Probabilistic Logic
+Programming, held at University of Udine in the academic year 2018-2019 by
+Elena Bellodi.}
 
 
 
@@ -83,8 +83,8 @@ problem we tackle in this paper. We refer to this as the \emph{fingerprint
 graph reconstruction problem}.
 Probabilistic Logic Programming (PLP, for short) reveals itself as a powerful
 framework to reason about uncertain systems. It inherits from Logic Programming
-the ability to write succinct yet meaningful programs, powerful inference
-tools like unification, and ,from Probability Theory, the ability to reason
+the ability to write succinct yet meaningful programs and powerful inference
+tools like unification and from Probability Theory the ability to reason
 with uncertainty.
 Among the main techniques proposed for PLP, Logic Programs with Annotated
 Disjunctions (LPADs, for short) received a lot of attention, thanks to the
@@ -116,7 +116,7 @@ recognition and probabilistic logic programming, in particular about LPADs.
 \label{sub:backfinger}
 We refer to \cite{maltoni2009handbook} for the main definitions about
 fingerprint recognition.  Each \emph{minutia} is an informative point of the
-fingerprint, in the sense that it represents distinct features of the latter.
+fingerprint, in the sense that it represents distintict features of the latter.
 It can be of two type: \emph{ending}, \ie it represents one end of a ridge, or
 \emph{bifurcation}, representing a point where a ridge splits into two other
 ridges.  Furthermore, each minutia has attached a position in the image (\ie
@@ -132,15 +132,15 @@ bifurcation minutiae by green one. Moreover, the short straight line exiting
 outgoing of a circle represents the direction of the minutia. 
 
 Along with the set of minutiae, usually the database contains also the
-\emph{type} of the whole fingerprint: in \cref{fig:patterns}, four
-types of fingerprints are pictured, \ie the ones we have considered in our study. This information is particularly important
-in the context of recognition, since it represents useful background
-information.  For example, to determine the probability that two
-minutiae are linked is possible to check the fingerprint type and
-the position of the two minutiae to give a more accurate answer
-compared to the one that would be given only knowing the position of the minutiae.
-Therefore, in our encoding, we will exploits both the minutiae information and
-the fingerprint type. 
+\emph{type} of the whole fingerprint: in \cref{fig:patterns}, four types of
+fingerprints are pictured, \ie the ones we have considered in our study. This
+information is particularly important in the context of recognition, since it
+represents useful background information.  For example, to determine the
+probability that two minutiae are linked is possible to check the fingerprint
+type and the position of the two minutiae to give a more accurate answer
+compared to the one that would be given only knowing the position of the
+minutiae.  Therefore, in our encoding, we will exploit both the minutiae
+information and the fingerprint type. 
     
     \begin{figure}
 		\centering
@@ -172,7 +172,7 @@ the fingerprint type.
 \end{figure}
 
 The graph we want to reconstruct is a particular type of directed
-\textit{graph} subjected to several structure constraints on the edges; \eg each
+\textit{graph} subject to several structure constraints on the edges; \eg each
 node can have at most one \textit{incoming edge} and at most two
 \textit{outgoing}.  We refer to this as the \emph{fingerprint graph}.  The main
 idea behind this graph (shown in \cref{fig:skemingraph}) is that it should
@@ -495,7 +495,7 @@ right-loop typed fingerprints.
 \paragraph{Constraint LOOP}
 Given a left or right loop fingerprint, we noted that the ending-type
 minutiae located in the \emph{lower region} of the image are clustered along
-a vertical line as shown in \cref{fig:loop}.
+a vertical dotted line as shown in \cref{fig:loop}.
 This behavior is captured by \emph{Constraint LOOP}, which gives to
 the edge between two minutiae $M_1$ and $M_2$ belonging to a left or right loop
 the probability $\weight_{LOOP}$, where:
@@ -550,14 +550,14 @@ defined as follows:
 in order to give more weight to the points in the bottom right region.
 \begin{figure}
 	\centering
-   	\begin{subfigure}{.48\textwidth}
+   	\begin{subfigure}{.38\textwidth}
    			\centering
 	\includegraphics[width=0.9\linewidth]{img/arch}
 	\caption{Skeleton of an \textit{arch} type. In red are highlighted examples of the describe ridges.}
 	\label{fig:arch}
 \end{subfigure}%
 \hfill
-\begin{subfigure}{.48\textwidth}
+\begin{subfigure}{.38\textwidth}
 	\centering
 	\includegraphics[width=1\linewidth]{img/loop_mod2}
 	\caption{Skeleton of a \textit{left-loop} type. In blue the quadrant that encapsulates the loop while in red and green the parts captured by the arch constraints.}
@@ -655,6 +655,25 @@ graph. This is exactly the solution to out starting problem, \ie the
 fingerprint graph reconstruction problem.
 
 
+\begin{figure}
+	\centering
+	\begin{subfigure}{.38\textwidth}
+		\centering
+		\includegraphics[width=0.9\linewidth]{img/c-final}
+		\caption{Graph obtained from the original binary image.}
+					\label{fig:concl-c}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.38\textwidth}
+		\centering
+		\includegraphics[width=0.86\linewidth]{img/plp-final}
+		\caption{Graph obtained from our script.}
+			\label{fig:concl-plp}
+	\end{subfigure}%
+	\caption{Graphs confrontation.}
+	\label{fig:concl}
+\end{figure}
+
 
 
 
@@ -679,26 +698,6 @@ procedure (see \cref{fig:concl-plp}), even if it differs from the original one
 results that can be representative of real fingerprint.  That is why, even if
 the two graphs obviously differ, the results are promising and this tool is
 certainly to keep in mind for future studies on fingerprints recognition.
-
-\begin{figure}
-	\centering
-	\begin{subfigure}{.48\textwidth}
-		\centering
-		\includegraphics[width=0.9\linewidth]{img/c-final}
-		\caption{Graph obtained from the original binary image.}
-					\label{fig:concl-c}
-	\end{subfigure}%
-	\hfill
-	\begin{subfigure}{.48\textwidth}
-		\centering
-		\includegraphics[width=0.86\linewidth]{img/plp-final}
-		\caption{Graph obtained from our script.}
-			\label{fig:concl-plp}
-	\end{subfigure}%
-	\caption{Graphs confrontation.}
-	\label{fig:concl}
-\end{figure}
-
 As future works we plan to:
 \begin{enumerate*}[label=\roman*)]
   \item increase the precision of our tool by tuning the equations we described
