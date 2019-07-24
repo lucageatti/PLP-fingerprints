@@ -34,7 +34,7 @@
 \begin{document}
 \maketitle
 \paragraph{Abstract}
-Fingerprint recognition is a problem of fundamental importance nowadays.
+Fingerprint recognition is a problem of fundamental importance nowadays\cite{maltoni2009handbook}.
 Commonly, fingerprints are represented in databases as a set of
 \emph{minutiae}, \ie points in the 2D space of an image with a direction and
 a type attached. A fundamental problem is to reconstruct from this set of
@@ -63,10 +63,9 @@ Modern \textit{biometrics}-based tools exploit the fact that biometric
 characteristics, used for the verification of an individual’s identity, are
 unique from person to person.  This is why the majority of the studies in this
 field aim to generate biometric tools that are able to distinguish even twins
-\todo{Add references (also in the following)}
-\cite{}.
+\cite{jain2001twin,jain2002similarity}.
 %
-The purpose of above-mentioned studies is to identify the uniqueness of each
+The purpose of the above-mentioned studies is to identify the uniqueness of each
 \textit{fingerprint}, facial feature or any others biometric characteristics of
 a person. Fingerprints in particular play a central role, in that they
 represent the most used biometric characteristics. A fingerprint's image is not
@@ -494,7 +493,6 @@ right-loop typed fingerprints.
 \paragraph{Constraint LOOP}
 Given a left or right loop fingerprint, we noted that the ending-type
 minutiae located in the \emph{lower region} of the image are clustered along
-\todo{Show the vertical line in the image.} 
 a vertical line as shown in \cref{fig:loop}.
 This behavior is captured by \emph{Constraint LOOP}, which gives to
 the edge between two minutiae $M_1$ and $M_2$ belonging to a left or right loop
@@ -518,11 +516,10 @@ fingerprint are located, we identified another two constraints, that we call
 \texttt{LL} (short for \texttt{L}eft \texttt{L}oop) and \texttt{RL} (short for
 \texttt{R}ight \texttt{L}oop): minutiae have to be \emph{balanced} along the
 vertical line of \cref{fig:loop}, in a very similar way we did for
-\emph{DIST\_ARCH\_3}. In other words, the more the midpoint of the straight
-\todo{Add something to the denote the third quartile in the image} line between
+\emph{DIST\_ARCH\_3}. In other words, the more the midpoint of the straight line between
 two minutiae is closer to the \emph{third quartile}\footnote{For third
 quartile, we wean the set of points $(X,Y)$ such that $Y=\frac{3}{4}\cdot
-max\_Y$} of the image, the more an edge between them is likely.
+max\_Y$} (the lowest dotted line in \cref{fig:loop}) of the image, the more an edge between them is likely.
 
 Overall, the probability given by \emph{Constraint LL} to the existence of an
 edge is $\weight_{LL}$, where:
@@ -560,7 +557,7 @@ in order to give more weight to the points in the bottom right region.
 \hfill
 \begin{subfigure}{.48\textwidth}
 	\centering
-	\includegraphics[width=0.86\linewidth]{img/loop}
+	\includegraphics[width=1\linewidth]{img/loop_mod2}
 	\caption{Skeleton of a \textit{left-loop} type. In blue the quadrant that encapsulates the loop while in red and green the parts captured by the arch constraints.}
 	\label{fig:loop}
 \end{subfigure}%
